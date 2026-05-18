@@ -1,7 +1,6 @@
 // 1. Firebase ki required cheezein import karein (Hamesha top par)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-// FIXED: Added missing "www." into the CDN URL address below
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 
@@ -27,7 +26,10 @@ const closeBtn = document.getElementById('menuCloseBtn');
 const sideMenu = document.getElementById('sideMenu');
 const backdrop = document.getElementById('menuBackdrop');
 const authBtn = document.getElementById('login-btn'); 
-const productGrid = document.getElementById('productGrid');
+
+// FIXED: Purane single productGrid ki jagah dono alag grids ko grab kiya
+const jjkGrid = document.getElementById('jjkProductGrid');
+const narutoGrid = document.getElementById('narutoProductGrid');
 
 
 // 5. Navigation Menu Functions
@@ -50,21 +52,20 @@ if (backdrop) backdrop.addEventListener('click', closeNavMenu);
 
 
 // 6. Asynchronous function to handle database mapping loops
-// 6. Asynchronous function to handle database mapping loops
-async function loadProductsFromDatabase() {
-  if (!productGrid) return; 
+// FIXED: Yeh ek generic (reusable) function ban gaya hai jo dono categories ko handle karega
+async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
+  if (!targetGrid) return; 
 
   try {
-    // FIXED: Ab hum innerHTML ko saaf nahi karenge, varna humara white preloader delete ho jayega!
-    const querySnapshot = await getDocs(collection(db, "products"));
+    const querySnapshot = await getDocs(collection(db, collectionName));
 
     if (querySnapshot.empty) {
-      productGrid.innerHTML = "<p style='padding:20px;'>No products found in database.</p>";
-      removeGridPreloader(); // Loader hatao agar data khali hai
+      targetGrid.innerHTML = "<p style='padding:20px;'>No products found in this category.</p>";
+      removeGridPreloader(preloaderId); // Khali hone par bhi loader hatayein
       return;
     }
 
-    // Saare products ko loop karke add karein (Yeh preloader ke peeche add hote rahenge)
+    // Saare products ko loop karke target grid ke andar append karein
     querySnapshot.forEach((doc) => {
       const productData = doc.data();
       const cardDiv = document.createElement("div");
@@ -78,28 +79,29 @@ async function loadProductsFromDatabase() {
         <button class="addToCart" data-id="${productData.id}">Add to cart</button>
       `;
 
-      productGrid.appendChild(cardDiv);
+      targetGrid.appendChild(cardDiv);
     });
 
+    // Cart buttons par click listener lagayein
     attachCartButtonListeners();
     
-    // SUCCESS: Saare cards append hone ke baad white screen parda hatao
-    removeGridPreloader();
+    // SUCCESS: Cards append hote hi specific preloader parda hatao
+    removeGridPreloader(preloaderId);
 
   } catch (error) {
-    console.error("Database connection failure: ", error);
-    productGrid.innerHTML = `<p style='padding: 20px; color: red;'>Failed to load product data catalog. Check browser console.</p>`;
-    removeGridPreloader(); // Error aane par bhi loader hatao taaki screen freeze na dikhe
+    console.error(`Database connection failure for ${collectionName}: `, error);
+    targetGrid.innerHTML = `<p style='padding: 20px; color: red;'>Failed to load data. Check browser console.</p>`;
+    removeGridPreloader(preloaderId); // Error aane par bhi loader hatao taaki screen freeze na dikhe
   }
 }
 
-// Grid Preloader ko smooth fade-out karne ka helper function
-function removeGridPreloader() {
-  const gridLoader = document.getElementById('gridPreloader');
+// Grid Preloader ko smooth fade-out karne ka reusable function
+function removeGridPreloader(preloaderId) {
+  const gridLoader = document.getElementById(preloaderId);
   if (gridLoader) {
-    gridLoader.style.opacity = '0'; // Pehle dhundhla karega
+    gridLoader.style.opacity = '0'; // Pehle fade out transition hoga
     setTimeout(() => {
-      gridLoader.remove(); // 300ms ke baad DOM se poori tarah delete kar dega
+      gridLoader.remove(); // 300ms ke baad DOM se complete remove
     }, 300);
   }
 }
@@ -114,6 +116,7 @@ function attachCartButtonListeners() {
     };
   });
 }
+
 
 // 7. Firebase Authentication Logic
 onAuthStateChanged(auth, (user) => {
@@ -140,4 +143,8 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-loadProductsFromDatabase();
+
+// ==================== EXECUTION CALLS ====================
+// Dono categories ko parallel me unke respective preloader IDs ke sath trigger kiya
+loadAnimeProducts("jjk-products", jjkGrid, "jjkGridPreloader");
+loadAnimeProducts("naruto-products", narutoGrid, "narutoGridPreloader");
