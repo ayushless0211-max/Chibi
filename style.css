@@ -63,7 +63,7 @@ body {
 	display: flex;
 	gap: 10px;
 	justify-content: space-between;
-	padding-right: 10px;
+	padding-right: 0px;
 	overflow-x: auto;
 	height: auto;
 }
