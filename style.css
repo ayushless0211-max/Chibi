@@ -59,7 +59,7 @@ body {
 .product {
 	margin-top: 25px;
   border: 0px solid black;
-  padding: 0px;
+  padding-bottom: 5px;
 	display: flex;
 	gap: 10px;
 	justify-content: space-between;
