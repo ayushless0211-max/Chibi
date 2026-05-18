@@ -8,7 +8,9 @@ body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 10px;
 }
-
+.h1 {
+  text-align: left;
+}
 /* Base triangle shape setup */
 .triangle-back-btn {
   width: 0;
