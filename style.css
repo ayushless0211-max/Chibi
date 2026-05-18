@@ -68,9 +68,9 @@ body {
 .card {
   padding-left: 10px;
   justify-content: center;
-	padding-bottom: 10px;;
-	flex: 1 1 0;
-	width: 40px;}
+	padding-bottom: 10px;
+	width: 40px;
+}
 
 .card img {
    display: block;
