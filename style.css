@@ -12,6 +12,7 @@ body {
   text-align: left;
   font-weight: 600;
   border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
 }
 /* Base triangle shape setup */
 .triangle-back-btn {
