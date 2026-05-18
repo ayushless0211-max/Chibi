@@ -1,0 +1,295 @@
+ /* General Base Setup */
+body {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 40px 20px;
+  color: #333333;
+}
+
+/* Structural Layout Wrapper */
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* Space between product card and reviews card */
+}
+
+/* --- BOTTOM PANEL: REVIEWS SECTION STYLE --- */
+.reviews-section-wrapper {
+  background: #ffffff;
+  padding: 0px;
+  border-radius: 0px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.reviews-heading {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+
+.review-card {
+  border-bottom: 1px solid #f1f5f9;
+  padding: 20px 0;
+}
+
+.review-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.review-user {
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 15px;
+}
+
+.review-stars {
+  color: #ffbc00;
+  font-size: 14px;
+}
+
+.review-date {
+  font-size: 12px;
+  color: #94a3b8;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.review-text {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Responsive adjustment for small screens */
+@media (max-width: 768px) {
+  .reviews-section-wrapper {
+    padding: 20px;
+  }
+}
+
+
+.arrow-back-btn {
+  background: none;
+  border: none;
+  font-size: 24px; /* Adjust this to make the arrow bigger or smaller */
+  font-weight: bold;
+  color: #333333; /* Arrow color */
+  cursor: pointer;
+  padding: 10px;
+  display: inline-block;
+  font-family: sans-serif; /* Keeps the arrow clean and geometric */
+  line-height: 1;
+}
+
+/* Trigger the leftward bounce animation on hover */
+.arrow-back-btn:hover {
+  animation: arrowBounce 0.6s ease-out;
+}
+
+/* Bounce animation sequence */
+@keyframes arrowBounce {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10px); /* Adjust this number to make it bounce further left */
+  }
+  40% {
+    transform: translateX(0);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+
+/* Master Page Flex Container */
+.product-page-wrapper {
+  max-width: 1100px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  gap: 50px; /* Left aur Right section ke beech ka space */
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 0px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* --- LEFT SIDE: GALLERY STYLE --- */
+.gallery-section {
+  flex: 1; /* Left panel ko 50% width dega */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.main-image-box {
+  width: 100%;
+  background-color: #fdfdfd;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Badi Image Styling with smooth single-bounce transition */
+.main-image-box img {
+  width: 100%;
+  max-height: 450px;
+  object-fit: contain;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Jab badi photo par mouse hover karein toh dynamic bounce effect */
+.main-image-box img:hover {
+  transform: scale(1.03);
+}
+
+.thumbnail-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+/* Chhoti Images (Thumbnails) Styling */
+.thumb-pic {
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.thumb-pic:hover {
+  border-color: #007bff;
+  transform: translateY(-2px); /* Chhoti photo upar ko jump karegi */
+}
+
+
+/* --- RIGHT SIDE: INFO STYLE --- */
+.info-section {
+  flex: 1; /* Right panel ko 50% width dega */
+  display: flex;
+  flex-direction: column;
+}
+
+.breadcrumb {
+  font-size: 13px;
+  color: #888888;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.product-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 10px 0;
+  line-height: 1.2;
+}
+
+.rating-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stars { color: #ffbc00; font-size: 18px; }
+.reviews-count { color: #666666; font-size: 14px; }
+
+.product-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: #222222;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eeeeee;
+  padding-bottom: 15px;
+}
+
+.product-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555555;
+  margin-bottom: 30px;
+}
+
+/* Buy & Add to Cart Container */
+.purchase-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: auto; /* Buttons ko hamesha column ke bottom me alignment dega */
+}
+
+.purchase-actions button {
+  flex: 1;
+  padding: 15px 0;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Add to cart blue button */
+.add-cart-btn {
+  background-color: #fff;
+  color: #007bff;
+  border: 2px solid #007bff !important;
+}
+
+.add-cart-btn:hover {
+  background-color: #007bff;
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 123, 255, 0.2);
+}
+
+/* Buy Now solid dark button */
+.buy-now-btn {
+  background-color: #ff5722;
+  color: white;
+}
+
+.buy-now-btn:hover {
+  background-color: #e64a19;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(230, 74, 25, 0.25);
+}
+
+/* Responsive Setup: Agar screen chhoti ho (Mobile phone) toh left-right upar-neeche ho jaye */
+@media (max-width: 768px) {
+  .product-page-wrapper {
+    flex-direction: column;
+    padding: 20px;
+  }
+  body { padding: 10px; }
+}
