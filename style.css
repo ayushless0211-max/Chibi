@@ -58,6 +58,7 @@ body {
 
 .product {
 	margin-top: 25px;
+  padding-top: 5px;
   border: 0px solid black;
   padding-bottom: 5px;
 	display: flex;
