@@ -141,3 +141,37 @@ onAuthStateChanged(auth, (user) => {
 });
 
 loadProductsFromDatabase();
+
+
+import { addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"; // Yeh top par check kar lena
+
+async function migrateCollection() {
+  try {
+      console.log("Migration shuru ho gayi hai...");
+          
+              // 1. Purane 'products' collection se saara data nikaalo
+                  const oldSnapshot = await getDocs(collection(db, "products"));
+                      
+                          if (oldSnapshot.empty) {
+                                console.log("Purane collection me koi data nahi mila!");
+                                      return;
+                                          }
+
+                                              // 2. Ek-ek karke saare documents ko naye 'jjk-products' me daalo
+                                                  const newCollectionRef = collection(db, "jjk-products");
+                                                      
+                                                          for (const docRef of oldSnapshot.docs) {
+                                                                const data = docRef.data();
+                                                                      await addDoc(newCollectionRef, data);
+                                                                            console.log(`${data.title || 'Product'} ko jjk-products me copy kar diya.`);
+                                                                                }
+
+                                                                                    alert("Saara data 'jjk-products' me successfully copy ho gaya hai! Ab aap Firebase Console me jaakar purana 'products' collection manually delete kar sakte hain.");
+
+                                                                                      } catch (error) {
+                                                                                          console.error("Migration me error aaya: ", error);
+                                                                                            }
+                                                                                            }
+
+                                                                                            // ISE RUN KARNE KE LIYE UNCOMMENT KAREIN (Page ek baar load hote hi ise wapas comment/delete kar dena)
+                                                                                             migrateCollection();
