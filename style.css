@@ -72,6 +72,7 @@ body {
   flex: 1 1 0;
   border: 1px solid black;
   justify-content: center;
+  align-items: center;
 	padding-bottom: 10px;
 	width: auto;
 }
