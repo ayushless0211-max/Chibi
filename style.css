@@ -72,7 +72,7 @@ body {
   border: 1px solid black;
   justify-content: center;
 	padding-bottom: 10px;
-	width: 160px;
+	width: auto;
 }
 
 .card img {
