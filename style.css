@@ -60,6 +60,7 @@ body {
 	margin-top: 25px;
   border: 1px solid black;
   padding: 10px;
+  scroll-padding: 10px;
 	display: flex;
 	gap: 10px;
 	justify-content: space-between;
