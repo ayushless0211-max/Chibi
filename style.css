@@ -8,8 +8,9 @@ body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 10px;
 }
-.h1 {
+.h3-cont {
   text-align: left;
+  line-height: 1.0;
   font-weight: 700;
 }
 /* Base triangle shape setup */
