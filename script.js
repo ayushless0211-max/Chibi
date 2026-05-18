@@ -50,19 +50,21 @@ if (backdrop) backdrop.addEventListener('click', closeNavMenu);
 
 
 // 6. Asynchronous function to handle database mapping loops
+// 6. Asynchronous function to handle database mapping loops
 async function loadProductsFromDatabase() {
   if (!productGrid) return; 
 
   try {
-    productGrid.innerHTML = "<p style='padding:20px;'>Loading products...</p>";
+    // FIXED: Ab hum innerHTML ko saaf nahi karenge, varna humara white preloader delete ho jayega!
     const querySnapshot = await getDocs(collection(db, "products"));
-    productGrid.innerHTML = ""; 
 
     if (querySnapshot.empty) {
       productGrid.innerHTML = "<p style='padding:20px;'>No products found in database.</p>";
+      removeGridPreloader(); // Loader hatao agar data khali hai
       return;
     }
 
+    // Saare products ko loop karke add karein (Yeh preloader ke peeche add hote rahenge)
     querySnapshot.forEach((doc) => {
       const productData = doc.data();
       const cardDiv = document.createElement("div");
@@ -80,10 +82,25 @@ async function loadProductsFromDatabase() {
     });
 
     attachCartButtonListeners();
+    
+    // SUCCESS: Saare cards append hone ke baad white screen parda hatao
+    removeGridPreloader();
 
   } catch (error) {
     console.error("Database connection failure: ", error);
     productGrid.innerHTML = `<p style='padding: 20px; color: red;'>Failed to load product data catalog. Check browser console.</p>`;
+    removeGridPreloader(); // Error aane par bhi loader hatao taaki screen freeze na dikhe
+  }
+}
+
+// Grid Preloader ko smooth fade-out karne ka helper function
+function removeGridPreloader() {
+  const gridLoader = document.getElementById('gridPreloader');
+  if (gridLoader) {
+    gridLoader.style.opacity = '0'; // Pehle dhundhla karega
+    setTimeout(() => {
+      gridLoader.remove(); // 300ms ke baad DOM se poori tarah delete kar dega
+    }, 300);
   }
 }
 
@@ -97,7 +114,6 @@ function attachCartButtonListeners() {
     };
   });
 }
-
 
 // 7. Firebase Authentication Logic
 onAuthStateChanged(auth, (user) => {
