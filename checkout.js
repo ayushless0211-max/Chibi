@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // STEP A: Sahi Tunnel Route par hit karna (`/api/create-payment-order`)
-                const orderRes = await fetch('https://64cc723ce3ec29.lhr.life/api/create-payment-order', {
+                const orderRes = await fetch('https://52abbd1555cf56.lhr.life/api/create-payment-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cartItems: cart })
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         placeOrderBtn.innerText = "Verifying Payment Integrity...";
                         
                         // STEP C: Verification data ke liye sahi endpoint route (`/api/verify-payment`)
-                        const verifyRes = await fetch('https://64cc723ce3ec29.lhr.life/api/verify-payment', {
+                        const verifyRes = await fetch('https://52abbd1555cf56.lhr.life/api/verify-payment', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
