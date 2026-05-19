@@ -27,6 +27,13 @@ if (cart.length === 0) {
         </div>
     `;
 
+// FIXED LOGIC: Left section ko temporary full width (100%) dein taaki text pure screen ke center me aaye
+    if (cartItemsList) {
+        cartItemsList.style.width = '100%';
+        cartItemsList.style.display = 'block';
+        cartItemsList.style.paddingRight = '0';
+    }
+    
     // 2. NAYA LOGIC: Right side wale summary panel ko chupao taaki fuzool lamba space na bane
     const summarySection = document.querySelector('.cart-summary-section');
     if (summarySection) {
