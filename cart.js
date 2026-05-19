@@ -27,6 +27,20 @@ if (cart.length === 0) {
         </div>
     `;
 
+    
+// cart.js me cartItemsList.innerHTML = ""; ke theek niche ye jodh do taaki item hone par box dikhe
+
+const summarySection = document.querySelector('.cart-summary-section');
+const cartWrapper = document.querySelector('.cart-wrapper');
+
+if (window.innerWidth >= 768) {
+    if (summarySection) summarySection.style.display = 'table-cell';
+    if (cartWrapper) cartWrapper.style.display = 'table';
+} else {
+    if (summarySection) summarySection.style.display = 'block';
+    if (cartWrapper) cartWrapper.style.display = 'block';
+}
+    
 // FIXED LOGIC: Left section ko temporary full width (100%) dein taaki text pure screen ke center me aaye
     if (cartItemsList) {
         cartItemsList.style.width = '100%';
@@ -63,18 +77,6 @@ if (cart.length > 0) {
 
     cartItemsList.innerHTML = "";
     let overallTotal = 0;
-
-    // cart.js me cartItemsList.innerHTML = ""; ke theek niche ye jodh do taaki item hone par box dikhe
-const summarySection = document.querySelector('.cart-summary-section');
-const cartWrapper = document.querySelector('.cart-wrapper');
-
-if (window.innerWidth >= 768) {
-    if (summarySection) summarySection.style.display = 'table-cell';
-    if (cartWrapper) cartWrapper.style.display = 'table';
-} else {
-    if (summarySection) summarySection.style.display = 'block';
-    if (cartWrapper) cartWrapper.style.display = 'block';
-}
 
     cart.forEach((item, index) => {
         const numericPrice = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
