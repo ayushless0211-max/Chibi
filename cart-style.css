@@ -2,13 +2,13 @@
 body {
     background-color: #f8f9fa;
     margin: 0;
-    padding: 0;
+    padding: 10px;
 }
 
 .cart-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px 15px 80px 15px;
+    padding: 0px;
 }
 
 /* Flex structure for dual panel grid layout on large screens */
