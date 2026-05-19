@@ -177,7 +177,7 @@
 }
 
 /* Primary Action Buttons Matching Homepage Styles */
-.checkout-btn {
+#checkout-btn {
     width: 100%;
     background-color: #007bff; /* Exact requested blue color */
     color: #ffffff;
