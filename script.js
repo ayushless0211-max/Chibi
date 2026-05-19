@@ -53,6 +53,7 @@ if (backdrop) backdrop.addEventListener('click', closeNavMenu);
 
 // 6. Asynchronous function to handle database mapping loops
 // FIXED: Yeh ek generic (reusable) function ban gaya hai jo dono categories ko handle karega
+// 6. Asynchronous function to handle database mapping loops
 async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
   if (!targetGrid) return; 
 
@@ -61,7 +62,7 @@ async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
 
     if (querySnapshot.empty) {
       targetGrid.innerHTML = "<p style='padding:20px;'>No products found in this category.</p>";
-      removeGridPreloader(preloaderId); // Khali hone par bhi loader hatayein
+      removeGridPreloader(preloaderId);
       return;
     }
 
@@ -71,27 +72,28 @@ async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
       const cardDiv = document.createElement("div");
       cardDiv.className = "card";
 
+      // Screenshot verification ke mutabik fields mapping check ki gayi hai
       cardDiv.innerHTML = `
-        <a href="product-detail.html?id=${productData.id}" class="card-link-wrapper">
-          <img src="${productData.img}" alt="${productData.description || 'Product Image'}">
-          <p class="description">${productData.title}</p>
+        <a href="product-detail.html?id=${productData.id || ''}" class="card-link-wrapper">
+          <img src="${productData.img || ''}" alt="${productData.title || 'Anime Model'}">
+          <p class="description">${productData.title || 'Untitled Product'}</p>
         </a>
-        <button class="addToCart" data-id="${productData.id}">Add to cart</button>
+        <button class="addToCart" data-id="${productData.id || ''}">Add to cart</button>
       `;
 
       targetGrid.appendChild(cardDiv);
     });
 
-    // Cart buttons par click listener lagayein
+    // Cart buttons listener load karein
     attachCartButtonListeners();
     
-    // SUCCESS: Cards append hote hi specific preloader parda hatao
+    // Smooth parda hatao
     removeGridPreloader(preloaderId);
 
   } catch (error) {
     console.error(`Database connection failure for ${collectionName}: `, error);
     targetGrid.innerHTML = `<p style='padding: 20px; color: red;'>Failed to load data. Check browser console.</p>`;
-    removeGridPreloader(preloaderId); // Error aane par bhi loader hatao taaki screen freeze na dikhe
+    removeGridPreloader(preloaderId);
   }
 }
 
