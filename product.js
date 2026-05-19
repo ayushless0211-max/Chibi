@@ -182,8 +182,6 @@ if (reviewForm) {
     try {
       // Firestore ke 'reviews' collection me data add karna
       await addDoc(collection(db, "reviews"), newReview);
-      
-      alert("Review submitted successfully!");
       reviewForm.reset(); // Form clear karna
       
       // List ko instantly refresh karna
