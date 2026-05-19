@@ -25,6 +25,18 @@ function renderCartUI() {
     cartItemsList.innerHTML = "";
     let overallTotal = 0;
 
+    // cart.js me cartItemsList.innerHTML = ""; ke theek niche ye jodh do taaki item hone par box dikhe
+const summarySection = document.querySelector('.cart-summary-section');
+const cartWrapper = document.querySelector('.cart-wrapper');
+
+if (window.innerWidth >= 768) {
+    if (summarySection) summarySection.style.display = 'table-cell';
+    if (cartWrapper) cartWrapper.style.display = 'table';
+} else {
+    if (summarySection) summarySection.style.display = 'block';
+    if (cartWrapper) cartWrapper.style.display = 'block';
+}
+
     cart.forEach((item, index) => {
         const numericPrice = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
         overallTotal += (numericPrice * item.quantity);
