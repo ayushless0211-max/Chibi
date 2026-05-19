@@ -1,0 +1,237 @@
+/* --- Global Reset & Variable Constants --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    background-color: #f8fafc;
+    color: #1e293b;
+    padding-top: 70px; /* Navbar ke liye padding */
+}
+
+/* --- Navbar Styling (Consistent with Index) --- */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    z-index: 1000;
+}
+.nav-container {
+    max-width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+.logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+.logo span {
+    color: #007bff;
+}
+.menu-toggle-btn, .nav-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #334155;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 8px;
+}
+.nav-actions {
+    display: flex;
+    gap: 15px;
+}
+
+/* --- Layout Grid Structure --- */
+.checkout-wrapper {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.checkout-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+@media (min-width: 992px) {
+    .checkout-container {
+        grid-template-columns: 1.5fr 1fr;
+    }
+}
+
+/* --- Form Fields & Section UI --- */
+.checkout-form-section, .summary-sticky-box {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03), 0 2px 4px -1px rgba(0,0,0,0.02);
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #0f172a;
+    border-left: 4px solid #007bff;
+    padding-left: 12px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+.form-row .form-group {
+    flex: 1;
+}
+.option-60 { flex: 1.6 !important; }
+.option-40 { flex: 1 !important; }
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+input[type="text"], input[type="tel"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1e293b;
+    transition: all 0.2s ease;
+    background-color: #f8fafc;
+}
+
+input:focus {
+    outline: none;
+    border-color: #007bff;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+/* --- Payment Method Component --- */
+.payment-option {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    background-color: rgba(0, 123, 255, 0.02);
+    cursor: pointer;
+}
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 12px;
+    font-weight: 600;
+    color: #007bff;
+}
+
+/* --- Right Side: Item Review Layout --- */
+.summary-sticky-box {
+    position: sticky;
+    top: 100px;
+}
+.summary-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.checkout-items-list {
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.checkout-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.checkout-item img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+.item-info {
+    flex: 1;
+}
+.item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 4px;
+}
+.item-meta {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.summary-divider {
+    border: 0;
+    height: 1px;
+    background-color: #e2e8f0;
+    margin: 20px 0;
+}
+
+.price-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #64748b;
+}
+.total-row {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* --- Place Order Action Button --- */
+.place-order-btn {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: background-color 0.2s ease;
+}
+.place-order-btn:hover {
+    background-color: #0056b3;
+}
