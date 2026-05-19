@@ -177,3 +177,4 @@ onAuthStateChanged(auth, (user) => {
 // ==================== EXECUTION CALLS ====================
 loadAnimeProducts("jjk-products", jjkGrid, "jjkGridPreloader");
 loadAnimeProducts("naruto-products", narutoGrid, "narutoGridPreloader");
+
