@@ -31,21 +31,29 @@ function renderCartUI() {
 
         const itemRow = document.createElement('div');
         itemRow.className = 'cart-item';
-        itemRow.innerHTML = `
-            <div class="cart-item-img">
-                <img src="${item.img}" alt="${item.title}">
-            </div>
-            <div class="cart-item-details">
-                <h4 class="cart-item-title">${item.title}</h4>
-                <p class="cart-item-price">${item.price}</p>
-                <div class="quantity-control">
-                    <button class="qty-btn minus-qty" data-index="${index}">&minus;</button>
-                    <span class="qty-value">${item.quantity}</span>
-                    <button class="qty-btn plus-qty" data-index="${index}">&plus;</button>
-                </div>
-            </div>
-            <button class="remove-item-btn" data-index="${index}"><i class="fa-solid fa-trash-can"></i></button>
-        `;
+        // cart.js ke renderCartUI ke andar itemRow.innerHTML ko isse replace karein:
+itemRow.innerHTML = `
+    <div class="cart-item-img">
+        <a href="product-detail.html?id=${item.id || ''}&cat=${item.category || 'jjk-products'}">
+            <img src="${item.img}" alt="${item.title}" style="cursor: pointer;">
+        </a>
+    </div>
+    <div class="cart-item-details">
+        <h4 class="cart-item-title">
+            <a href="product-detail.html?id=${item.id || ''}&cat=${item.category || 'jjk-products'}" style="text-decoration: none; color: inherit;">
+                ${item.title}
+            </a>
+        </h4>
+        <p class="cart-item-price">${item.price}</p>
+        <div class="quantity-control">
+            <button class="qty-btn minus-qty" data-index="${index}">&minus;</button>
+            <span class="qty-value">${item.quantity}</span>
+            <button class="qty-btn plus-qty" data-index="${index}">&plus;</button>
+        </div>
+    </div>
+    <button class="remove-item-btn" data-index="${index}"><i class="fa-solid fa-trash-can"></i></button>
+`;
+
         cartItemsList.appendChild(itemRow);
     });
 
