@@ -60,7 +60,7 @@ if (checkoutForm) {
 
         try {
             // STEP A: Apne Termux Node Server (Port 5000) se Razorpay Order ID maangna
-            const orderRes = await fetch('http://localhost:5000/api/create-payment-order', {
+            const orderRes = await fetch('https://fa5ca81dd9cc9e.lhr.life/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ cartItems: cart }) // 'cart' variable aapke getCartFromStorage() se aa raha hai
@@ -90,7 +90,7 @@ if (checkoutForm) {
                     placeOrderBtn.innerText = "Verifying Payment Integrity...";
                     
                     // STEP C: Payment ki verification details wapas Termux server ko bhejna database me log karne ke liye
-                    const verifyRes = await fetch('http://localhost:5000/api/verify-payment', {
+                    const verifyRes = await fetch('https://fa5ca81dd9cc9e.lhr.life/', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
