@@ -15,12 +15,34 @@ function renderCartUI() {
     
     if (!cartItemsList) return;
     
-    if (cart.length === 0) {
-        cartItemsList.innerHTML = `<p style="padding: 40px; text-align: left; font-family: sans-serif; color: #64748b; font-size: 16px; width: 100%;">Your cart is empty! </p>`;
-        if (totalOriginalPrice) totalOriginalPrice.innerText = "₹0";
-        if (finalCartTotal) finalCartTotal.innerText = "₹0";
-        return;
+    // cart.js ke renderCartUI() me khali cart wale block ko isse replace karein
+if (cart.length === 0) {
+    // 1. Left panel me badiya bada empty state ka design inject karein
+    cartItemsList.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px; font-family: sans-serif; width: 100%;">
+            <div style="font-size: 50px; margin-bottom: 15px;">🛒</div>
+            <h3 style="color: #1e293b; margin-bottom: 8px;">Your Cart is Empty</h3>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Quick, go grab some awesome chibis!</p>
+            <a href="index.html" style="display: inline-block; background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">Continue Shopping</a>
+        </div>
+    `;
+
+    // 2. NAYA LOGIC: Right side wale summary panel ko chupao taaki fuzool lamba space na bane
+    const summarySection = document.querySelector('.cart-summary-section');
+    if (summarySection) {
+        summarySection.style.display = 'none';
     }
+
+    // Grid columns ko collapse karke full width karo taaki text center dikhe
+    const cartWrapper = document.querySelector('.cart-wrapper');
+    if (cartWrapper) {
+        cartWrapper.style.display = 'block';
+    }
+
+    if (totalOriginalPrice) totalOriginalPrice.innerText = "₹0";
+    if (finalCartTotal) finalCartTotal.innerText = "₹0";
+    return;
+}
 
     cartItemsList.innerHTML = "";
     let overallTotal = 0;
