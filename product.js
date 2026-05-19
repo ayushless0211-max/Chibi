@@ -17,8 +17,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // 3. URL PARAMETERS & DOM HOOKS
+// 3. URL PARAMETERS & DOM HOOKS
 const urlParameters = new URLSearchParams(window.location.search);
 const clickedProductId = urlParameters.get('id');
+const clickedCategory = urlParameters.get('cat'); // <-- NAYI LINE: URL se category (collection name) nikaala
 
 const mainImgElement = document.getElementById('mainProductImg');
 const thumbContainer = document.getElementById('thumbnailContainer');
@@ -33,23 +35,32 @@ const reviewForm = document.getElementById('reviewForm');
 const reviewCountElement = document.querySelector('.reviews-count');
 
 // 4. MAIN PRODUCT LOADER
+// 4. MAIN PRODUCT LOADER
 async function getProductDetailFromFirebase() {
   if (!clickedProductId) {
     if (titleElement) titleElement.innerText = "Product ID is missing in URL!";
-    removePreloader(); // <-- White screen hatayein agar ID nahi milti
+    removePreloader();
     return;
   }
 
+  // DYNAMIC COLLECTION SELECTION: 
+  // Agar URL me category milti hai (jaise jjk-products ya naruto-products), toh use use karo.
+  // Agar nahi milti (kisi purane link se aaya hai), toh backup ke liye 'jjk-products' use karo.
+  const targetCollection = clickedCategory ? clickedCategory : "jjk-products";
+
   try {
-    const productsRef = collection(db, "products");
+    // FIXED: Ab humne fixed string ki jagah 'targetCollection' variable pass kar diya hai
+    const productsRef = collection(db, targetCollection);
     const q = query(productsRef, where("id", "==", clickedProductId));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
       if (titleElement) titleElement.innerText = "Product Not Found!";
-      removePreloader(); // <-- White screen hatayein agar product database me na mile
+      removePreloader();
       return;
     }
+
+    // ... Aapka baki ka poora data inject karne ka code aur reviews load karne ka code ekdum PEHLE JAISA hi rahega ...
 
     let productInfo = {};
     querySnapshot.forEach((doc) => {
