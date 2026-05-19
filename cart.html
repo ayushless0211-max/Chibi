@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Anime Chibi Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cart-style.css">
+</head>
+<body>
+
+    <div class="menu-backdrop" id="menuBackdrop"></div>
+    <aside class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <button class="menu-close-btn" id="menuCloseBtn">&times;</button>
+        </div>
+        <nav class="menu-links">
+            <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="#"><i class="fa-solid fa-store"></i> Shop</a>
+            <a href="#"><i class="fa-solid fa-tags"></i> Offers</a>
+            <a href="profile.html"><i class="fa-solid fa-envelope"></i> Profile</a>
+            <a href="#"><i class="fa-solid fa-envelope"></i> Contact Us</a>
+        </nav>
+    </aside>
+
+    <nav class="navbar">
+        <div class="nav-actions">
+            <button class="menu-btn" id="menuOpenBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <a href="index.html" style="margin-left: auto; margin-right: 20px; font-size: 22px; color: #333; text-decoration: none; display: flex; align-items: center;">
+                <i class="fa-solid fa-house"></i>
+            </a>
+            <a href="login.html" id="login-btn">Logout</a>
+        </div>
+    </nav>
+
+    <main class="cart-container">
+        <div class="h3-cont">
+            <h3 class="h1">Shopping Cart</h3>
+        </div>
+
+        <div class="cart-wrapper">
+            <div class="cart-items-section" id="cartItemsList">
+                
+                <div class="cart-item">
+                    <div class="cart-item-img">
+                        <img src="https://i.ibb.co/bMd22tF/Look-Up-Megumi-Fushiguro.jpg" alt="Product Image">
+                    </div>
+                    <div class="cart-item-details">
+                        <h4 class="cart-item-title">Megumi Chibi Model - Jujutsu Kaisen</h4>
+                        <p class="cart-item-price">₹1099</p>
+                        <div class="quantity-control">
+                            <button class="qty-btn minus-qty">&minus;</button>
+                            <span class="qty-value">1</span>
+                            <button class="qty-btn plus-qty">&plus;</button>
+                        </div>
+                    </div>
+                    <button class="remove-item-btn"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+
+                <div class="cart-item">
+                    <div class="cart-item-img">
+                        <img src="https://i.ibb.co/bMd22tF/Look-Up-Megumi-Fushiguro.jpg" alt="Product Image">
+                    </div>
+                    <div class="cart-item-details">
+                        <h4 class="cart-item-title">Gojo Chibi Model - Special Edition</h4>
+                        <p class="cart-item-price">₹1099</p>
+                        <div class="quantity-control">
+                            <button class="qty-btn minus-qty">&minus;</button>
+                            <span class="qty-value">1</span>
+                            <button class="qty-btn plus-qty">&plus;</button>
+                        </div>
+                    </div>
+                    <button class="remove-item-btn"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+
+            </div>
+
+            <div class="cart-summary-section">
+                <div class="summary-box">
+                    <h4 class="summary-title">Order Summary</h4>
+                    <div class="summary-row">
+                        <span>Price (2 items)</span>
+                        <span id="totalOriginalPrice">₹2198</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery Charges</span>
+                        <span style="color: #10b981; font-weight: 500;">FREE</span>
+                    </div>
+                    <hr class="summary-divider">
+                    <div class="summary-row total-row">
+                        <span>Total Amount</span>
+                        <span id="finalCartTotal">₹2198</span>
+                    </div>
+                    <button class="checkout-btn">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
