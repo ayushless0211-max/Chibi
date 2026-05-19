@@ -3,45 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Project</title>
-    <!-- FontAwesome Icons ke liye (Cart icon wagera chalane ke liye) -->
+    <title>Product View Screen</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="product-style.css">
 </head>
 <body>
-  <body>
 
-  <!-- ==================== FULL WHITE PRELOADER ==================== -->
   <div id="pagePreloader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; z-index: 99999; display: flex; justify-content: center; align-items: center; transition: opacity 0.3s ease;">
-      <!-- Agar sirf pure white screen chahiye to neeche wali line hata sakte ho, ya fir koi simple text/spinner rakh sakte ho -->
-      <p style="font-family: sans-serif; color: #475569; font-size: 16px; font-weight: 500;">Loading...</p>
+      <p style="font-family: sans-serif; color: #475569; font-size: 16px; font-weight: 500;">Loading Anime Asset Info...</p>
   </div>
-  <!-- ============================================================== -->
 
-  <!-- Back Arrow Button -->
-  <button class="arrow-back-btn" onclick="if(document.referrer) { history.back(); } else { window.location.href='/'; }" aria-label="Go back">
-    &lt;
-  </button>
+  <button class="arrow-back-btn" onclick="if(document.referrer) { history.back(); } else { window.location.href='index.html'; }" aria-label="Go back">&lt;</button>
 
   <div class="main-container">
-
-    <!-- 1. LEFT & RIGHT COMBINED PANEL (Product Info & Images) -->
     <div class="product-page-wrapper">
       
-      <!-- LEFT SIDE: Image Gallery Panel -->
       <div class="gallery-section">
         <div class="main-image-box">
-          <!-- Hover bounce effect isme automatic css se apply ho jayega -->
           <img id="mainProductImg" src="" alt="Main Product View">
         </div>
-        <!-- Chhote thumbnails automatic yahan JavaScript se aayenge -->
         <div id="thumbnailContainer" class="thumbnail-row"></div>
       </div>
 
-      <!-- RIGHT SIDE: Product Content Panel -->
       <div class="info-section">
         <nav class="breadcrumb">Home &gt; Shop &gt; Category</nav>
-        
         <h1 id="mainProductTitle" class="product-title">Loading Title...</h1>
         
         <div class="rating-box">
@@ -50,67 +35,38 @@
         </div>
         
         <div id="mainProductPrice" class="product-price">Loading Price...</div>
-        
-        <p class="product-description">
-          Loading premium product details from database...
-        </p>
+        <p class="product-description">Loading data from decentralized node database...</p>
 
-        <!-- Interactive Purchase Action Buttons -->
         <div class="purchase-actions">
-          <button class="add-cart-btn"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</button>
-          <button class="buy-now-btn">Buy Now</button>
+          <button id="detailAddToCartBtn" class="add-cart-btn"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</button>
+          <button id="detailBuyNowBtn" class="buy-now-btn">Buy Now</button>
         </div>
       </div>
 
     </div>
 
-    <!-- 2. BOTTOM PANEL: REVIEWS SECTION (Aapke product-style.css ke layout ke hisaab se) -->
-    <div class="reviews-section-wrapper" style="margin-top: 0px; padding: 20px; text-align: left;">
+    <div class="reviews-section-wrapper" style="padding: 20px; text-align: left;">
       <h2 class="reviews-heading">Customer Reviews</h2>
-      
-      <!-- Yahan saare Firebase se aane wale reviews dynamic load honge -->
-      <div id="reviewsContainer">
-        <p style="color: #94a3b8; font-size: 14px;">Loading reviews...</p>
-      </div>
+      <div id="reviewsContainer"></div>
 
-      <!-- Naya Review Add Karne Ka Form -->
       <div class="add-review-box" style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #f1f5f9;">
-        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 20px; color: #1a1a1a;">Write a Review</h3>
+        <h3>Write a Review</h3>
         <form id="reviewForm" style="display: flex; flex-direction: column; gap: 15px;">
-          
-          <!-- Name Input -->
-          <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-size: 14px; font-weight: 600; color: #475569;">Your Name:</label>
-            <input type="text" id="reviewerName" required style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background: #f8f9fa; text-align: left;" placeholder="Enter your name">
-          </div>
-          
-          <!-- Rating Dropdown -->
-          <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-size: 14px; font-weight: 600; color: #475569;">Rating:</label>
-            <select id="reviewRating" style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background: #f8f9fa; color: #ffbc00; font-weight: bold;">
-              <option value="5" style="color: #ffbc00;">★★★★★ (5 Stars)</option>
-              <option value="4" style="color: #ffbc00;">★★★★☆ (4 Stars)</option>
-              <option value="3" style="color: #ffbc00;">★★★☆☆ (3 Stars)</option>
-              <option value="2" style="color: #ffbc00;">★★☆☆☆ (2 Stars)</option>
-              <option value="1" style="color: #ffbc00;">★☆☆☆☆ (1 Star)</option>
-            </select>
-          </div>
-
-          <!-- Comment Textarea -->
-          <div style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="font-size: 14px; font-weight: 600; color: #475569;">Your Review:</label>
-            <textarea id="reviewerComment" required rows="4" style="padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background: #f8f9fa; resize: vertical; text-align: left;" placeholder="What did you like or dislike about this anime model?"></textarea>
-          </div>
-
-          <!-- Submit Button (Aapke Orange Buy button ka design) -->
-          <button type="submit" style="background-color: #ff5722; color: white; border: none; padding: 15px 0; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: background 0.2s;">Submit Review</button>
+          <input type="text" id="reviewerName" required placeholder="Enter your name" style="padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
+          <select id="reviewRating" style="padding:12px; border-radius:8px; color:#ffbc00; font-weight:bold;">
+              <option value="5">★★★★★ (5 Stars)</option>
+              <option value="4">★★★★☆ (4 Stars)</option>
+              <option value="3">★★★☆☆ (3 Stars)</option>
+              <option value="2">★★☆☆☆ (2 Stars)</option>
+              <option value="1">★☆☆☆☆ (1 Star)</option>
+          </select>
+          <textarea id="reviewerComment" required rows="4" placeholder="Your review text..." style="padding:12px; border-radius:8px; border:1px solid #e2e8f0;"></textarea>
+          <button type="submit" style="background-color: #ff5722; color: white; padding: 15px; border-radius: 8px; border:none; font-weight: 600;">Submit Review</button>
         </form>
       </div>
     </div>
-
   </div>
 
-  <!-- Firebase JavaScript Module Link -->
   <script type="module" src="product.js"></script>
 </body>
 </html>
