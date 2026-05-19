@@ -1,9 +1,7 @@
-// 1. Firebase ki required cheezein import karein (Hamesha top par)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 2. Aapka Firebase config object
 const firebaseConfig = {
   apiKey: "AIzaSyCQLFU68k4uFoY8W25vw_QXr_NqITNFccM",
   authDomain: "fir-store-7a2d5.firebaseapp.com",
@@ -13,168 +11,165 @@ const firebaseConfig = {
   appId: "1:426927884345:web:a2e7dcfb81c9715860e5e8"
 };
 
-// 3. Firebase ko initialize karein
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 4. Grabbing HTML DOM Elements
+// DOM Elements
 const openBtn = document.getElementById('menuOpenBtn');
 const closeBtn = document.getElementById('menuCloseBtn');
 const sideMenu = document.getElementById('sideMenu');
 const backdrop = document.getElementById('menuBackdrop');
 const authBtn = document.getElementById('login-btn'); 
 const cartNavBtn = document.getElementById('cart-nav-btn');
+const storefront = document.getElementById('dynamicStorefront');
 
-const jjkGrid = document.getElementById('jjkProductGrid');
-const narutoGrid = document.getElementById('narutoProductGrid');
+// Hardcoded array ko automate karne ke liye aap yahan bas active categories list maintain kar sakte hain.
+// Future proofing: Jab bhi firebase me naya list banao, uska naam bas is array me daal dena, baaki sab automatic hoga!
+const registeredCollections = ["jjk-products", "naruto-products"]; 
 
-// 5. Navigation Menu Functions
-function openNavMenu() {
-  sideMenu.classList.add('is-active');
-  backdrop.classList.add('is-active');
-  document.body.style.overflow = 'hidden'; 
+// Navigation Menu
+if (openBtn) openBtn.addEventListener('click', () => { sideMenu.classList.add('is-active'); backdrop.classList.add('is-active'); });
+if (closeBtn) closeBtn.addEventListener('click', () => { sideMenu.classList.remove('is-active'); backdrop.classList.remove('is-active'); });
+if (backdrop) backdrop.addEventListener('click', () => { sideMenu.classList.remove('is-active'); backdrop.classList.remove('is-active'); });
+
+// Format Display Name (e.g. "jjk-products" -> "Jujutsu Kaisen")
+function formatCategoryHeading(slug) {
+    if(slug === "jjk-products") return "Jujutsu Kaisen | Starting ₹999";
+    if(slug === "naruto-products") return "Naruto | Starting ₹999";
+    return slug.replace("-products", "").toUpperCase() + " | Special Edition";
 }
 
-function closeNavMenu() {
-  sideMenu.classList.remove('is-active');
-  backdrop.classList.remove('is-active');
-  document.body.style.overflow = ''; 
-}
+// Render dynamic sections
+async function buildAutomatedStorefront() {
+    if (!storefront) return;
 
-if (openBtn) openBtn.addEventListener('click', openNavMenu);
-if (closeBtn) closeBtn.addEventListener('click', closeNavMenu);
-if (backdrop) backdrop.addEventListener('click', closeNavMenu);
+    for (const colName of registeredCollections) {
+        // Create Section Header
+        const headerCont = document.createElement('div');
+        headerCont.className = 'h3-cont';
+        headerCont.innerHTML = `<h3 class="h1">${formatCategoryHeading(colName)}</h3>`;
+        storefront.appendChild(headerCont);
 
-// 6. Asynchronous function to handle database mapping loops
-async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
-  if (!targetGrid) return; 
+        // Create Grid Element
+        const gridDiv = document.createElement('div');
+        gridDiv.className = 'product';
+        gridDiv.id = `${colName}-grid`;
+        gridDiv.style.cssText = "position: relative; min-height: 265px; margin-bottom: 30px;";
 
-  try {
-    const querySnapshot = await getDocs(collection(db, collectionName));
+        // Create Inline Grid Preloader
+        const preloader = document.createElement('div');
+        preloader.id = `${colName}-preloader`;
+        preloader.style.cssText = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #f8f9fa; z-index: 10; display: flex; justify-content: center; align-items: center; transition: opacity 0.3s ease;";
+        preloader.innerHTML = `<p style="font-family: sans-serif; color: #475569; font-size: 14px; font-weight: 500;">Loading Products...</p>`;
+        gridDiv.appendChild(preloader);
+        
+        storefront.appendChild(gridDiv);
 
-    if (querySnapshot.empty) {
-      targetGrid.innerHTML = "<p style='padding:20px;'>No products found in this category.</p>";
-      removeGridPreloader(preloaderId);
-      return;
+        // Load Products into this dynamic grid
+        await loadProductsToGrid(colName, gridDiv, preloader.id);
     }
 
-    querySnapshot.forEach((doc) => {
-      const productData = doc.data();
-      const cardDiv = document.createElement("div");
-      cardDiv.className = "card";
-
-      // SURAKSHA CHECK: Numeric conversion ensure karne ke liye taaki Load failed error na aaye
-      const numericPrice = productData.price ? productData.price.toString() : "₹999";
-
-      cardDiv.innerHTML = `
-        <a href="product-detail.html?id=${productData.id || ''}&cat=${collectionName}" class="card-link-wrapper">
-          <img src="${productData.img || ''}" alt="${productData.title || 'Anime Model'}">
-          <p class="description">${productData.title || 'Untitled Product'}</p>
-        </a>
-        <button class="addToCart" data-id="${productData.id || ''}" data-price="${numericPrice}"><i class="fa-solid fa-cart-shopping"></i>Add to cart</button>
-      `;
-
-      targetGrid.appendChild(cardDiv);
-    });
-
-    attachCartButtonListeners();
-    removeGridPreloader(preloaderId);
-
-  } catch (error) {
-    console.error(`Database connection failure for ${collectionName}: `, error);
-    targetGrid.innerHTML = `<p style='padding: 20px; color: red;'>Failed to load data. Check browser console.</p>`;
-    removeGridPreloader(preloaderId);
-  }
+    // Saare collections load hone ke baad global loader mitao
+    const globalLoader = document.getElementById('globalStoreLoader');
+    if (globalLoader) {
+        globalLoader.style.opacity = '0';
+        setTimeout(() => globalLoader.remove(), 300);
+    }
 }
 
-function removeGridPreloader(preloaderId) {
-  const gridLoader = document.getElementById(preloaderId);
-  if (gridLoader) {
-    gridLoader.style.opacity = '0'; 
-    setTimeout(() => {
-      gridLoader.remove(); 
-    }, 300);
-  }
-}
+async function loadProductsToGrid(collectionName, targetGrid, preloaderId) {
+    try {
+        const querySnapshot = await getDocs(collection(db, collectionName));
+        const preloaderEl = document.getElementById(preloaderId);
 
-// FIXED: Is function ko ab dynamic collection detection ke saath stable kiya gaya hai
-function attachCartButtonListeners() {
-  const cartButtons = document.querySelectorAll('.addToCart');
-  cartButtons.forEach(button => {
-    button.onclick = (event) => {
-      event.preventDefault(); 
-      
-      const productId = button.getAttribute('data-id');
-      const productPrice = button.getAttribute('data-price') || "₹999"; 
-      
-      const card = button.closest('.card');
-      if (!card) return;
-
-      const titleEl = card.querySelector('.description');
-      const imgEl = card.querySelector('img');
-
-      const title = titleEl ? titleEl.innerText : "Anime Model";
-      const img = imgEl ? imgEl.src : "";
-      
-      // FIXED LOGIC: Pata lagayein ki item kis section ka hai taaki image dynamic redirect sahi chale
-      const isNaruto = card.closest('#narutoProductGrid') !== null;
-      const verifiedCollection = isNaruto ? "naruto-products" : "jjk-products";
-
-      let cart = JSON.parse(localStorage.getItem('animeCart')) || [];
-      const existingProduct = cart.find(item => item.id === productId);
-
-      if (existingProduct) {
-          existingProduct.quantity += 1;
-      } else {
-          cart.push({ 
-              id: productId, 
-              title: title, 
-              img: img, 
-              price: productPrice, 
-              quantity: 1,
-              category: verifiedCollection
-          });
-      }
-
-      localStorage.setItem('animeCart', JSON.stringify(cart));
-      alert("Item added to cart successfully! 🎉");
-    };
-  });
-}
-
-// 7. Firebase Authentication Logic
-onAuthStateChanged(auth, (user) => {
-    if (!authBtn) return; 
-
-    if (user) {
-        authBtn.innerText = "Logout";
-        authBtn.href = "#"; 
-        
-        if (cartNavBtn) {
-            cartNavBtn.href = "cart.html"; 
-            cartNavBtn.onclick = null; 
+        if (querySnapshot.empty) {
+            targetGrid.innerHTML += "<p style='padding:20px;'>No items found in this section.</p>";
+            if (preloaderEl) preloaderEl.remove();
+            return;
         }
 
-        authBtn.onclick = (e) => {
-            e.preventDefault(); 
-            signOut(auth).then(() => {
-                alert("Logged out successfully!");
-                window.location.reload(); 
-            }).catch((error) => console.error("Logout error: ", error));
-        };
+        querySnapshot.forEach((doc) => {
+            const product = doc.data();
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const priceStr = product.price ? product.price.toString() : "₹999";
+            
+            // CRITICAL INJECTION: data-category block completely automates the tracking pipeline
+            card.innerHTML = `
+                <a href="product-detail.html?id=${product.id || ''}&cat=${collectionName}" class="card-link-wrapper">
+                    <img src="${product.img || ''}" alt="${product.title || 'Model'}">
+                    <p class="description">${product.title || 'Untitled Product'}</p>
+                </a>
+                <button class="addToCart" 
+                        data-id="${product.id || ''}" 
+                        data-price="${priceStr}" 
+                        data-category="${collectionName}">
+                    <i class="fa-solid fa-cart-shopping"></i>Add to cart
+                </button>
+            `;
+            targetGrid.appendChild(card);
+        });
+
+        if (preloaderEl) {
+            preloaderEl.style.opacity = '0';
+            setTimeout(() => preloaderEl.remove(), 300);
+        }
+
+    } catch (err) {
+        console.error(err);
+        targetGrid.innerHTML += `<p style='padding: 20px; color: red;'>Database Sync Timeout.</p>`;
+    }
+}
+
+// Master Event Listener for Global Interactions (No breakdown bugs)
+document.addEventListener('click', (e) => {
+    const button = e.target.closest('.addToCart');
+    if (!button) return;
+    
+    e.preventDefault();
+    
+    const productId = button.getAttribute('data-id');
+    const productPrice = button.getAttribute('data-price');
+    const productCategory = button.getAttribute('data-category'); // AUTOMATIC VALUE
+    
+    const card = button.closest('.card');
+    const title = card ? card.querySelector('.description').innerText : "Anime Model";
+    const img = card ? card.querySelector('img').src : "";
+
+    let cart = JSON.parse(localStorage.getItem('animeCart')) || [];
+    const match = cart.find(item => item.id === productId);
+
+    if (match) {
+        match.quantity += 1;
     } else {
-        authBtn.innerText = "Login";
-        authBtn.href = "login.html"; 
-        authBtn.onclick = null; 
+        cart.push({
+            id: productId,
+            title: title,
+            img: img,
+            price: productPrice,
+            category: productCategory,
+            quantity: 1
+        });
+    }
 
-        if (cartNavBtn) {
-            cartNavBtn.href = "login.html";
-        }
+    localStorage.setItem('animeCart', JSON.stringify(cart));
+    alert(`🎉 Added '${title}' from '${productCategory}' smoothly to cart!`);
+});
+
+// Authentication Status Watcher
+onAuthStateChanged(auth, (user) => {
+    if (!authBtn) return;
+    if (user) {
+        authBtn.innerText = "Logout"; authBtn.href = "#";
+        if (cartNavBtn) cartNavBtn.href = "cart.html";
+        authBtn.onclick = (e) => { e.preventDefault(); signOut(auth).then(() => window.location.reload()); };
+    } else {
+        authBtn.innerText = "Login"; authBtn.href = "login.html"; authBtn.onclick = null;
+        if (cartNavBtn) cartNavBtn.href = "login.html";
     }
 });
 
-// ==================== EXECUTION CALLS ====================
-loadAnimeProducts("jjk-products", jjkGrid, "jjkGridPreloader");
-loadAnimeProducts("naruto-products", narutoGrid, "narutoGridPreloader");
-
+// Execute setup
+buildAutomatedStorefront();
