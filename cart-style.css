@@ -7,8 +7,6 @@ body {
 
 .cart-container {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 0px;
 }
 
 /* Flex structure for dual panel grid layout on large screens */
