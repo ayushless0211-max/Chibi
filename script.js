@@ -139,7 +139,8 @@ function attachCartButtonListeners() {
               title: title, 
               img: img, 
               price: productPrice, 
-              quantity: 1 
+              quantity: 1,
+              category: currentCollection // <-- NAYI LINE: Category ko bhi save kar liya
           });
       }
 
