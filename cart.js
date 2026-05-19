@@ -35,10 +35,20 @@ if (cart.length === 0) {
     }
     
     // 2. NAYA LOGIC: Right side wale summary panel ko chupao taaki fuzool lamba space na bane
-    const summarySection = document.querySelector('.cart-summary-section');
-    if (summarySection) {
-        summarySection.style.display = 'none';
+    // cart.js me cartItemsList.innerHTML = ""; ke theek niche wale is block ko check karein
+const summarySection = document.querySelector('.cart-summary-section');
+const cartWrapper = document.querySelector('.cart-wrapper');
+
+// FIXED LOGIC: Agar products hain, toh hidden section ko screen size ke mutabik wapas dikhao
+if (cart.length > 0) {
+    if (window.innerWidth >= 768) {
+        if (summarySection) summarySection.style.display = 'table-cell';
+        if (cartWrapper) cartWrapper.style.display = 'table';
+    } else {
+        if (summarySection) summarySection.style.display = 'block';
+        if (cartWrapper) cartWrapper.style.display = 'block';
     }
+}
 
     // Grid columns ko collapse karke full width karo taaki text center dikhe
     const cartWrapper = document.querySelector('.cart-wrapper');
