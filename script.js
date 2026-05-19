@@ -3,7 +3,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-
 // 2. Aapka Firebase config object
 const firebaseConfig = {
   apiKey: "AIzaSyCQLFU68k4uFoY8W25vw_QXr_NqITNFccM",
@@ -19,21 +18,16 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-
 // 4. Grabbing HTML DOM Elements
 const openBtn = document.getElementById('menuOpenBtn');
 const closeBtn = document.getElementById('menuCloseBtn');
 const sideMenu = document.getElementById('sideMenu');
 const backdrop = document.getElementById('menuBackdrop');
 const authBtn = document.getElementById('login-btn'); 
-// Purane buttons ke niche is line ko daal dein
 const cartNavBtn = document.getElementById('cart-nav-btn');
 
-
-// FIXED: Purane single productGrid ki jagah dono alag grids ko grab kiya
 const jjkGrid = document.getElementById('jjkProductGrid');
 const narutoGrid = document.getElementById('narutoProductGrid');
-
 
 // 5. Navigation Menu Functions
 function openNavMenu() {
@@ -48,14 +42,10 @@ function closeNavMenu() {
   document.body.style.overflow = ''; 
 }
 
-// Global Event Listeners for Menu
 if (openBtn) openBtn.addEventListener('click', openNavMenu);
 if (closeBtn) closeBtn.addEventListener('click', closeNavMenu);
 if (backdrop) backdrop.addEventListener('click', closeNavMenu);
 
-
-// 6. Asynchronous function to handle database mapping loops
-// FIXED: Yeh ek generic (reusable) function ban gaya hai jo dono categories ko handle karega
 // 6. Asynchronous function to handle database mapping loops
 async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
   if (!targetGrid) return; 
@@ -69,32 +59,26 @@ async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
       return;
     }
 
-    // Saare products ko loop karke target grid ke andar append karein
     querySnapshot.forEach((doc) => {
       const productData = doc.data();
       const cardDiv = document.createElement("div");
       cardDiv.className = "card";
 
-      // Screenshot verification ke mutabik fields mapping check ki gayi hai
-      // href ke andar humne id ke saath &cat=${collectionName} bhi jodh diya hai
-// Purani cardDiv.innerHTML ko isse replace karein (taaki price data-attribute me chali jaye)
-cardDiv.innerHTML = `
-  <a href="product-detail.html?id=${productData.id || ''}&cat=${collectionName}" class="card-link-wrapper">
-    <img src="${productData.img || ''}" alt="${productData.title || 'Anime Model'}">
-    <p class="description">${productData.title || 'Untitled Product'}</p>
-  </a>
-  <button class="addToCart" data-id="${productData.id || ''}" data-price="${productData.price || '₹999'}">Add to cart</button>
-`;
+      // SURAKSHA CHECK: Numeric conversion ensure karne ke liye taaki Load failed error na aaye
+      const numericPrice = productData.price ? productData.price.toString() : "₹999";
 
-
+      cardDiv.innerHTML = `
+        <a href="product-detail.html?id=${productData.id || ''}&cat=${collectionName}" class="card-link-wrapper">
+          <img src="${productData.img || ''}" alt="${productData.title || 'Anime Model'}">
+          <p class="description">${productData.title || 'Untitled Product'}</p>
+        </a>
+        <button class="addToCart" data-id="${productData.id || ''}" data-price="${numericPrice}">Add to cart</button>
+      `;
 
       targetGrid.appendChild(cardDiv);
     });
 
-    // Cart buttons listener load karein
     attachCartButtonListeners();
-    
-    // Smooth parda hatao
     removeGridPreloader(preloaderId);
 
   } catch (error) {
@@ -104,17 +88,17 @@ cardDiv.innerHTML = `
   }
 }
 
-// Grid Preloader ko smooth fade-out karne ka reusable function
 function removeGridPreloader(preloaderId) {
   const gridLoader = document.getElementById(preloaderId);
   if (gridLoader) {
-    gridLoader.style.opacity = '0'; // Pehle fade out transition hoga
+    gridLoader.style.opacity = '0'; 
     setTimeout(() => {
-      gridLoader.remove(); // 300ms ke baad DOM se complete remove
+      gridLoader.remove(); 
     }, 300);
   }
 }
 
+// FIXED: Is function ko ab dynamic collection detection ke saath stable kiya gaya hai
 function attachCartButtonListeners() {
   const cartButtons = document.querySelectorAll('.addToCart');
   cartButtons.forEach(button => {
@@ -122,12 +106,21 @@ function attachCartButtonListeners() {
       event.preventDefault(); 
       
       const productId = button.getAttribute('data-id');
-      const productPrice = button.getAttribute('data-price'); 
+      const productPrice = button.getAttribute('data-price') || "₹999"; 
       
       const card = button.closest('.card');
-      const title = card.querySelector('.description').innerText;
-      const img = card.querySelector('img').src;
+      if (!card) return;
+
+      const titleEl = card.querySelector('.description');
+      const imgEl = card.querySelector('img');
+
+      const title = titleEl ? titleEl.innerText : "Anime Model";
+      const img = imgEl ? imgEl.src : "";
       
+      // FIXED LOGIC: Pata lagayein ki item kis section ka hai taaki image dynamic redirect sahi chale
+      const isNaruto = card.closest('#narutoProductGrid') !== null;
+      const verifiedCollection = isNaruto ? "naruto-products" : "jjk-products";
+
       let cart = JSON.parse(localStorage.getItem('animeCart')) || [];
       const existingProduct = cart.find(item => item.id === productId);
 
@@ -140,7 +133,7 @@ function attachCartButtonListeners() {
               img: img, 
               price: productPrice, 
               quantity: 1,
-              category: currentCollection // <-- NAYI LINE: Category ko bhi save kar liya
+              category: verifiedCollection
           });
       }
 
@@ -150,22 +143,17 @@ function attachCartButtonListeners() {
   });
 }
 
-
-
 // 7. Firebase Authentication Logic
-//new
 onAuthStateChanged(auth, (user) => {
     if (!authBtn) return; 
 
     if (user) {
-        // 1. Agar user logged in hai, toh logout button dikhao
         authBtn.innerText = "Logout";
         authBtn.href = "#"; 
         
-        // 2. NAYA STEP: Cart icon par click karne par user direct 'cart.html' par jayega
         if (cartNavBtn) {
             cartNavBtn.href = "cart.html"; 
-            cartNavBtn.onclick = null; // Purana koi handler ho toh clear karein
+            cartNavBtn.onclick = null; 
         }
 
         authBtn.onclick = (e) => {
@@ -176,21 +164,16 @@ onAuthStateChanged(auth, (user) => {
             }).catch((error) => console.error("Logout error: ", error));
         };
     } else {
-        // 3. Agar user login nahi hai, toh login button dikhao
         authBtn.innerText = "Login";
         authBtn.href = "login.html"; 
         authBtn.onclick = null; 
 
-        // 4. NAYA STEP: Agar user bina login ke cart par click karega, toh wo 'login.html' par bhej diya jayega
         if (cartNavBtn) {
             cartNavBtn.href = "login.html";
         }
     }
 });
 
-
-
 // ==================== EXECUTION CALLS ====================
-// Dono categories ko parallel me unke respective preloader IDs ke sath trigger kiya
 loadAnimeProducts("jjk-products", jjkGrid, "jjkGridPreloader");
 loadAnimeProducts("naruto-products", narutoGrid, "narutoGridPreloader");
