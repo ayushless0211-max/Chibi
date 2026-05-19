@@ -72,7 +72,7 @@ async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
           <img src="${productData.img || ''}" alt="${productData.title || 'Anime Model'}">
           <p class="description">${productData.title || 'Untitled Product'}</p>
         </a>
-        <button class="addToCart" data-id="${productData.id || ''}" data-price="${numericPrice}">Add to cart</button>
+        <button class="addToCart" data-id="${productData.id || ''}" data-price="${numericPrice}"><i class="fa-solid fa-cart-shopping"></i>Add to cart</button>
       `;
 
       targetGrid.appendChild(cardDiv);
