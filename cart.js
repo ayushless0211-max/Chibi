@@ -16,7 +16,7 @@ function renderCartUI() {
     if (!cartItemsList) return;
     
     if (cart.length === 0) {
-        cartItemsList.innerHTML = `<p style="padding: 40px; text-align: center; font-family: sans-serif; color: #64748b; font-size: 16px; width: 100%;">Your cart is empty! </p>`;
+        cartItemsList.innerHTML = `<p style="padding: 40px; text-align: left; font-family: sans-serif; color: #64748b; font-size: 16px; width: 100%;">Your cart is empty! </p>`;
         if (totalOriginalPrice) totalOriginalPrice.innerText = "₹0";
         if (finalCartTotal) finalCartTotal.innerText = "₹0";
         return;
