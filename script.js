@@ -77,13 +77,15 @@ async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
 
       // Screenshot verification ke mutabik fields mapping check ki gayi hai
       // href ke andar humne id ke saath &cat=${collectionName} bhi jodh diya hai
+// Purani cardDiv.innerHTML ko isse replace karein (taaki price data-attribute me chali jaye)
 cardDiv.innerHTML = `
   <a href="product-detail.html?id=${productData.id || ''}&cat=${collectionName}" class="card-link-wrapper">
     <img src="${productData.img || ''}" alt="${productData.title || 'Anime Model'}">
     <p class="description">${productData.title || 'Untitled Product'}</p>
   </a>
-  <button class="addToCart" data-id="${productData.id || ''}">Add to cart</button>
+  <button class="addToCart" data-id="${productData.id || ''}" data-price="${productData.price || '₹999'}">Add to cart</button>
 `;
+
 
 
       targetGrid.appendChild(cardDiv);
@@ -118,11 +120,35 @@ function attachCartButtonListeners() {
   cartButtons.forEach(button => {
     button.onclick = (event) => {
       event.preventDefault(); 
+      
       const productId = button.getAttribute('data-id');
-      alert(`Item (${productId}) added to cart successfully!`);
+      const productPrice = button.getAttribute('data-price'); 
+      
+      const card = button.closest('.card');
+      const title = card.querySelector('.description').innerText;
+      const img = card.querySelector('img').src;
+      
+      let cart = JSON.parse(localStorage.getItem('animeCart')) || [];
+      const existingProduct = cart.find(item => item.id === productId);
+
+      if (existingProduct) {
+          existingProduct.quantity += 1;
+      } else {
+          cart.push({ 
+              id: productId, 
+              title: title, 
+              img: img, 
+              price: productPrice, 
+              quantity: 1 
+          });
+      }
+
+      localStorage.setItem('animeCart', JSON.stringify(cart));
+      alert("Item added to cart successfully! 🎉");
     };
   });
 }
+
 
 
 // 7. Firebase Authentication Logic
