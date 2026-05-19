@@ -73,13 +73,15 @@ async function loadAnimeProducts(collectionName, targetGrid, preloaderId) {
       cardDiv.className = "card";
 
       // Screenshot verification ke mutabik fields mapping check ki gayi hai
-      cardDiv.innerHTML = `
-        <a href="product-detail.html?id=${productData.id || ''}" class="card-link-wrapper">
-          <img src="${productData.img || ''}" alt="${productData.title || 'Anime Model'}">
-          <p class="description">${productData.title || 'Untitled Product'}</p>
-        </a>
-        <button class="addToCart" data-id="${productData.id || ''}">Add to cart</button>
-      `;
+      // href ke andar humne id ke saath &cat=${collectionName} bhi jodh diya hai
+cardDiv.innerHTML = `
+  <a href="product-detail.html?id=${productData.id || ''}&cat=${collectionName}" class="card-link-wrapper">
+    <img src="${productData.img || ''}" alt="${productData.title || 'Anime Model'}">
+    <p class="description">${productData.title || 'Untitled Product'}</p>
+  </a>
+  <button class="addToCart" data-id="${productData.id || ''}">Add to cart</button>
+`;
+
 
       targetGrid.appendChild(cardDiv);
     });
