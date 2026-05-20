@@ -213,3 +213,13 @@ input:focus {
 .place-order-btn:hover {
     background-color: #0056b3;
 }
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    display: block;       /* 👈 Labels ko poori width do taaki alignment kaam kare */
+    text-align: left;     /* 👈 Index ke global center-align ko kaatne ke liye */
+    margin-bottom: 2px;   /* Input box se thodi thich doori banana */
+    width: 100%;
+}
