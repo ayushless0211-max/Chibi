@@ -1,11 +1,5 @@
 /* Base Layout Configurations */
 /* --- Global Reset Update --- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box !important; /* 👈 Har ek badge, input, button ko boundary ke andar lock karega */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
 
 
 .cart-container {
