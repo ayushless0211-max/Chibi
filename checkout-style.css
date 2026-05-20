@@ -10,6 +10,7 @@
 
 .checkout-container {
     display: grid;
+	padding: 20px;
     grid-template-columns: 1fr;
     gap: 30px;
 }
