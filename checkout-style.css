@@ -1,4 +1,14 @@
 /* --- Pure Grid Blueprint for 2x2 Layout --- */
+
+/* --- Global Reset Update --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box !important; /* 👈 Har ek badge, input, button ko boundary ke andar lock karega */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
 .checkout-grid-container {
     display: grid;
     /* Isse left wala column bada (2.2 parts) aur right wala chota (1 part) rahega */
