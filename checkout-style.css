@@ -1,3 +1,30 @@
+/* --- Pure Grid Blueprint for 2x2 Layout --- */
+.checkout-grid-container {
+    display: grid;
+    /* Isse left wala column bada (2.2 parts) aur right wala chota (1 part) rahega */
+    grid-template-columns: 2.2fr 1fr; 
+    gap: 15px; /* Rows aur columns ke beech ka barabar gap */
+    width: 100%;
+}
+
+/* Mobile framework padding override patch for inputs */
+.checkout-grid-container .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+/* Inputs safe boundary constraint */
+.checkout-grid-container input {
+    width: 100%;
+    box-sizing: border-box; /* Padding ko andar lock rakhne ke liye */
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    text-align: left;
+}
 
 	
 
