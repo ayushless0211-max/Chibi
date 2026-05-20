@@ -1,1 +1,93 @@
-profile
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - Anime Chibi Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="profile-style.css"> 
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Anime <span>Chibi</span></div>
+        <div class="nav-actions">
+            <a href="index.html" class="#login-btn" style="background-color: transparent; color: #333; text-decoration: none; font-weight: 600;">
+                <i class="fa-solid fa-house" style="margin-right: 5px;"></i> Home
+            </a>
+            <button id="logout-btn" class="addToCart" style="width: auto; padding: 8px 15px; background-color: #dc3545;">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="profile-wrapper">
+        <div class="profile-header">
+            <h1 class="h1">Your Account</h1>
+            <p class="user-welcome">Hello, <span id="user-display-name">Loading...</span> (<span id="user-display-email">...</span>)</p>
+        </div>
+
+        <div class="amazon-grid">
+            
+            <div class="profile-card" onclick="location.href='#orders-section'">
+                <div class="card-icon"><i class="fa-solid fa-box-open"></i></div>
+                <div class="card-info">
+                    <h3>Your Orders</h3>
+                    <p>Track, return, or buy things again</p>
+                </div>
+            </div>
+
+            <div class="profile-card" onclick="location.href='#security-section'">
+                <div class="card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="card-info">
+                    <h3>Login & Security</h3>
+                    <p>Edit login, name, and mobile number</p>
+                </div>
+            </div>
+
+            <div class="profile-card" onclick="location.href='#address-section'">
+                <div class="card-icon"><i class="fa-solid fa-location-dot"></i></div>
+                <div class="card-info">
+                    <h3>Your Addresses</h3>
+                    <p>Edit shipping addresses for orders</p>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <div class="card-icon"><i class="fa-regular fa-credit-card"></i></div>
+                <div class="card-info">
+                    <h3>Payment Options</h3>
+                    <p>View saved cards or check UPI accounts</p>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <div class="card-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="card-info">
+                    <h3>Manage Prime</h3>
+                    <p>View benefits and payment settings</p>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <div class="card-icon"><i class="fa-regular fa-comments"></i></div>
+                <div class="card-info">
+                    <h3>Contact Us</h3>
+                    <p>Contact our customer care 24/7</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="orders-section" class="profile-details-section">
+            <h2 class="section-title">Your Recent Orders</h2>
+            <div id="orders-container" class="orders-list">
+                <p class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching your orders from database...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="profile.js" type="module"></script>
+</body>
+</html>
