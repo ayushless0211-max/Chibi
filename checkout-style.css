@@ -46,34 +46,32 @@
     gap: 8px;
 }
 
+/* --- Form Row Layout Fix (Mobile Friendly) --- */
 .form-row {
     display: flex;
     gap: 15px;
+    flex-wrap: wrap; /* 👈 Isse mobile me fields ek ke niche ek safely wrap ho jayengi */
 }
+
 .form-row .form-group {
-    flex: 1;
-}
-.option-60 { flex: 1.6 !important; }
-.option-40 { flex: 1 !important; }
-
-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #475569;
-    text-align: left;
+    flex: 1 1 160px; /* 👈 Minimum space handle karega taaki tight screens par wrap ho sake */
 }
 
+/* --- Input Fields Calculation Fix --- */
 input[type="text"], input[type="tel"] {
     width: 100%;
+    max-width: 100%; /* 👈 Kisi bhi haal me parent container se bahar nahi jayega */
     padding: 12px 16px;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     font-size: 14px;
     color: #1e293b;
-    transition: all 0.2s ease;
     background-color: #f8fafc;
-    text-align: left; /* Taki typing hamesha left se ho */
+    text-align: left;
+    box-sizing: border-box; /* 👈 Sabse zaroori: padding ko andar lock karne ke liye */
+    display: block;
 }
+
 
 input:focus {
     outline: none;
