@@ -3,68 +3,103 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    /* Index page se fonts match karne ke liye */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
     background-color: #f8fafc;
     color: #1e293b;
-    padding-top: 70px; /* Navbar ke liye padding */
+    /* Index body ki tarah safe internal space setup */
+    padding: 10px;
+    padding-top: 85px; /* Fixed navbar ke niche content na dbe isliye */
 }
 
-/* --- Navbar Styling (Consistent with Index) --- */
+/* --- Navbar Styling (FIXED: Matched 100% with Index Page) --- */
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 65px;
+    padding: 10px 15px;
     background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     z-index: 1000;
 }
+
+/* Index page ke structure se standard flexible alignments align karne ke liye */
+.nav-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 50px;
+}
+
+/* Base structural support for container wrapper inside navbar if any */
 .nav-container {
     max-width: 1200px;
-    height: 100%;
     margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    width: 100%;
 }
+
 .logo {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #333333;
+    text-align: left;
 }
 .logo span {
     color: #007bff;
 }
-.menu-toggle-btn, .nav-btn {
+
+/* Menu Toggle and Action items alignment inside checkout framework */
+.menu-btn {
     background: none;
     border: none;
-    font-size: 20px;
-    color: #334155;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
+    padding: 0;
+}
+.menu-btn span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #333333;
+    border-radius: 2px;
+}
+
+#login-btn, .nav-btn-legacy {
+    background-color: #007bff;
+    margin-left: 15px;
+    color: #ffffff;
+    border: none;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
     cursor: pointer;
     text-decoration: none;
-    padding: 8px;
-}
-.nav-actions {
-    display: flex;
-    gap: 15px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* --- Layout Grid Structure --- */
 .checkout-wrapper {
     max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+    margin: 20px auto;
+    padding: 0 10px;
 }
 
 .checkout-container {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 25px;
 }
 
 @media (min-width: 992px) {
@@ -76,18 +111,19 @@ body {
 /* --- Form Fields & Section UI --- */
 .checkout-form-section, .summary-sticky-box {
     background-color: #ffffff;
-    padding: 30px;
+    padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03), 0 2px 4px -1px rgba(0,0,0,0.02);
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Index card style shadows */
 }
 
 .section-title {
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 600;
     margin-bottom: 25px;
-    color: #0f172a;
+    color: #1e293b;
     border-left: 4px solid #007bff;
     padding-left: 12px;
+    text-align: left;
 }
 
 .form-group {
@@ -111,6 +147,7 @@ label {
     font-size: 13px;
     font-weight: 600;
     color: #475569;
+    text-align: left;
 }
 
 input[type="text"], input[type="tel"] {
@@ -122,6 +159,7 @@ input[type="text"], input[type="tel"] {
     color: #1e293b;
     transition: all 0.2s ease;
     background-color: #f8fafc;
+    text-align: left; /* Index ke global text-align override patch */
 }
 
 input:focus {
@@ -157,8 +195,9 @@ input:focus {
 }
 .summary-title {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     margin-bottom: 20px;
+    text-align: left;
 }
 
 .checkout-items-list {
@@ -182,6 +221,7 @@ input:focus {
 }
 .item-info {
     flex: 1;
+    text-align: left;
 }
 .item-title {
     font-size: 14px;
@@ -218,20 +258,21 @@ input:focus {
     color: #0f172a;
 }
 
-/* --- Place Order Action Button --- */
+/* --- Place Order Action Button (Index matching bouncing physics) --- */
 .place-order-btn {
     width: 100%;
     background-color: #007bff;
     color: white;
     padding: 14px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     margin-top: 25px;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .place-order-btn:hover {
     background-color: #0056b3;
+    transform: scale(1.02);
 }
