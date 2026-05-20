@@ -1,45 +1,60 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+// Firebase v12 SDK imports directly using your exact version urls
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
+// ✅ Your exact Firebase web configuration loaded safely
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCQLFU68k4uFoY8W25vw_QXr_NqITNFccM",
+    authDomain: "fir-store-7a2d5.firebaseapp.com",
+    projectId: "fir-store-7a2d5",
+    storageBucket: "fir-store-7a2d5.firebasestorage.app",
+    messagingSenderId: "426927884345",
+    appId: "1:426927884345:web:a2e7dcfb81c9715860e5e8",
+    measurementId: "G-3MCLPEPJLD"
 };
 
+// Initialize app frameworks
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Document Elements mapping
 const userNameDisplay = document.getElementById('user-display-name');
 const userEmailDisplay = document.getElementById('user-display-email');
 const ordersContainer = document.getElementById('orders-container');
 const logoutBtn = document.getElementById('logout-btn');
 
+// 1. Session Tracker (Gets triggered automatically when page loads)
 onAuthStateChanged(auth, (user) => {
     if (user) {
+        // User system me active hai, UI labels content update karo
         userNameDisplay.textContent = user.displayName || "Anime Fan";
         userEmailDisplay.textContent = user.email;
+        
+        // Firestore queries hit karo user id matching parameters par
         fetchUserOrders(user.uid);
     } else {
+        // Agar bina login koi profile kholne ki koshish kare, toh home page throw karo
         window.location.href = "index.html";
     }
 });
 
+// 2. Database orders fetch engine
 async function fetchUserOrders(userId) {
     try {
         const ordersRef = collection(db, "orders");
+        // Apne target documents find karega jahan userId current user se match ho
         const q = query(ordersRef, where("userId", "==", userId), orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
 
         ordersContainer.innerHTML = "";
 
         if (querySnapshot.empty) {
-            ordersContainer.innerHTML = `<p class="empty-text"><i class="fa-solid fa-basket-shopping"></i> You haven't placed any orders yet. Start shopping!</p>`;
+            ordersContainer.innerHTML = `
+                <p class="empty-text">
+                    <i class="fa-solid fa-basket-shopping"></i> You haven't placed any orders yet. Start shopping!
+                </p>`;
             return;
         }
 
@@ -47,6 +62,7 @@ async function fetchUserOrders(userId) {
             const orderData = doc.data();
             const orderDate = orderData.createdAt ? new Date(orderData.createdAt.seconds * 1000).toLocaleDateString() : "Recent";
             
+            // Render sub-items structure loops inside each transaction order card
             orderData.items.forEach(item => {
                 const orderHtml = `
                     <div class="order-block">
@@ -74,15 +90,15 @@ async function fetchUserOrders(userId) {
         });
 
     } catch (error) {
-        console.error("Orders load failed: ", error);
-        ordersContainer.innerHTML = `<p class="empty-text" style="color: #dc3545;"><i class="fa-solid fa-triangle-exclamation"></i> Failed to load orders. Please refresh.</p>`;
+        console.error("Orders collection read error: ", error);
+        ordersContainer.innerHTML = `
+            <p class="empty-text" style="color: #dc3545;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Failed to load orders. Please refresh.
+            </p>`;
     }
 }
 
+// 3. User termination action (Logout session end)
 logoutBtn.addEventListener('click', () => {
     signOut(auth).then(() => {
-        window.location.href = "index.html";
-    }).catch((error) => {
-        alert("Logout failed: " + error.message);
-    });
-});
+        window.location.href =
