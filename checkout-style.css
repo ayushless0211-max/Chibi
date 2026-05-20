@@ -3,79 +3,31 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* Index page se fonts match karne ke liye */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 10px;
     background-color: #f8fafc;
     color: #1e293b;
-    /* Index body ki tarah safe internal space setup */
-    padding: 10px;
-    padding-top: 85px; /* Fixed navbar ke niche content na dbe isliye */
 }
 
-/* --- Navbar Styling (FIXED: Matched 100% with Index Page) --- */
+/* --- Navbar Styling (100% Copy of Index Style) --- */
 .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
     padding: 10px 15px;
     background-color: #ffffff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
+    margin-bottom: 20px; /* Checkout form se dury banane ke liye */
 }
 
-/* Index page ke structure se standard flexible alignments align karne ke liye */
 .nav-actions {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     gap: 50px;
 }
-
-/* Base structural support for container wrapper inside navbar if any */
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.logo {
-    font-size: 20px;
-    font-weight: 700;
-    color: #333333;
-    text-align: left;
-}
-.logo span {
-    color: #007bff;
-}
-
-/* Menu Toggle and Action items alignment inside checkout framework */
-.menu-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 20px;
-    padding: 0;
-}
-.menu-btn span {
-    display: block;
-    width: 100%;
-    height: 3px;
-    background-color: #333333;
-    border-radius: 2px;
-}
-
-#login-btn, .nav-btn-legacy {
+	
+#login-btn {
     background-color: #007bff;
     margin-left: 15px;
     color: #ffffff;
@@ -87,19 +39,39 @@ body {
     cursor: pointer;
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}	
+
+.menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
+    padding: 0;
+}
+
+.menu-btn span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #333333;
+    border-radius: 2px;
 }
 
 /* --- Layout Grid Structure --- */
 .checkout-wrapper {
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 10px;
+    margin: 30px auto;
+    padding: 0 5px;
 }
 
 .checkout-container {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 25px;
+    gap: 30px;
 }
 
 @media (min-width: 992px) {
@@ -111,18 +83,18 @@ body {
 /* --- Form Fields & Section UI --- */
 .checkout-form-section, .summary-sticky-box {
     background-color: #ffffff;
-    padding: 25px;
+    padding: 30px;
     border-radius: 12px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Index card style shadows */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Index card jaisa reflection */
 }
 
 .section-title {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     margin-bottom: 25px;
     color: #1e293b;
-    border-left: 4px solid #007bff;
-    padding-left: 12px;
+    border-bottom: 2px solid #f1f5f9; /* Index h1 jaisa custom border */
+    padding-bottom: 10px;
     text-align: left;
 }
 
@@ -159,7 +131,7 @@ input[type="text"], input[type="tel"] {
     color: #1e293b;
     transition: all 0.2s ease;
     background-color: #f8fafc;
-    text-align: left; /* Index ke global text-align override patch */
+    text-align: left; /* Taki typing hamesha left se ho */
 }
 
 input:focus {
@@ -191,7 +163,7 @@ input:focus {
 /* --- Right Side: Item Review Layout --- */
 .summary-sticky-box {
     position: sticky;
-    top: 100px;
+    top: 30px;
 }
 .summary-title {
     font-size: 18px;
@@ -258,7 +230,7 @@ input:focus {
     color: #0f172a;
 }
 
-/* --- Place Order Action Button (Index matching bouncing physics) --- */
+/* --- Place Order Action Button --- */
 .place-order-btn {
     width: 100%;
     background-color: #007bff;
@@ -274,5 +246,4 @@ input:focus {
 }
 .place-order-btn:hover {
     background-color: #0056b3;
-    transform: scale(1.02);
 }
