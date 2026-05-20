@@ -8,16 +8,17 @@ body {
 /* --- Navbar Styling (100% Copy of Index Style) --- */
 .navbar {
     padding: 10px 15px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px; /* Checkout form se dury banane ke liye */
-}
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	}
 
 .nav-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 50px;
+    display:flex;
+	justify-content: flex-end;
+	align-items: center;
+	display: flex;
+	align-items: center;
+	gap: 50px;
 }
 	
 #login-btn {
