@@ -12,7 +12,7 @@
 .checkout-container {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 25px;
 }
 
 @media (min-width: 992px) {
