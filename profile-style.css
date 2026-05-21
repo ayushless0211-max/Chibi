@@ -12,8 +12,7 @@
 }
 .profile-wrapper {
     max-width: 1000px;
-    margin: 40px auto;
-    padding: 20px 15px;
+    margin: 40px auto;/*here5*/
 }
 
 .profile-header {
