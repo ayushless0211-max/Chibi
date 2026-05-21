@@ -26,7 +26,7 @@ const storefront = document.getElementById('dynamicStorefront');
 
 // Hardcoded array ko automate karne ke liye aap yahan bas active categories list maintain kar sakte hain.
 // Future proofing: Jab bhi firebase me naya list banao, uska naam bas is array me daal dena, baaki sab automatic hoga!
-const registeredCollections = ["jjk-products", "naruto-products"]; 
+const registeredCollections = ["jjk-products", "naruto-products", "demonslayer-products"]; 
 
 // Navigation Menu
 if (openBtn) openBtn.addEventListener('click', () => { sideMenu.classList.add('is-active'); backdrop.classList.add('is-active'); });
