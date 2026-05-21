@@ -136,6 +136,7 @@ body {
 
 /* --- LEFT SIDE: GALLERY STYLE --- */
 .gallery-section {
+  max-width: 50vh;
   flex: 1; /* Left panel ko 50% width dega */
   display: flex;
   flex-direction: column;
