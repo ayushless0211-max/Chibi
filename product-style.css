@@ -3,7 +3,7 @@ body {
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: #f8f9fa;
   margin: 0;
-  padding: 40px 20px;
+  padding: 0px 0px; /*here p changde by p*/
   color: #333333;
 }
 
