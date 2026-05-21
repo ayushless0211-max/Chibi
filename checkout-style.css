@@ -67,8 +67,6 @@
 }
 
 .section-title {
-    font-size: 20px;
-    font-weight: 600;
     margin-bottom: 25px;
     color: #1e293b;
     border-bottom: 2px solid #f1f5f9; /* Index h1 jaisa custom border */
