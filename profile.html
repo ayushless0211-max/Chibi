@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="profile-style.css"> 
 </head>
 <body>
-<div class="menu-backdrop" id="menuBackdrop"></div>
+    
+    <div class="menu-backdrop" id="menuBackdrop"></div>
     <aside class="side-menu" id="sideMenu">
         <div class="menu-header">
             <button class="menu-close-btn" id="menuCloseBtn">&times;</button>
@@ -18,39 +19,37 @@
             <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
             <a href="#"><i class="fa-solid fa-store"></i> Shop</a>
             <a href="#"><i class="fa-solid fa-tags"></i> Offers</a>
-            <a href="profile.html"><i class="fa-solid fa-envelope"></i> Profile</a>
+            <a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>
             <a href="#"><i class="fa-solid fa-envelope"></i> Contact Us</a>
         </nav>
     </aside>
 
-    
     <nav class="navbar">
-        
-        <div class="nav-actions">
+        <div class="nav-actions" style="width: 100%; display: flex; align-items: center;">
             <button class="menu-btn" id="menuOpenBtn">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            <div class="login-cart-btn" style="margin-left:auto; display: flex;">
-            <a href="index.html" id="login-btn">
-                <i class="fa-solid fa-house" style="margin-right: 0px;"></i>
-            </a>
-            <a id="login-btn" class="addToCart">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </a>
+            
+            <div class="login-cart-btn" style="margin-left:auto; display: flex; gap: 10px; align-items: center;">
+                <a href="index.html" class="login-btn-link" style="color: #333; font-size: 18px; padding: 5px 10px;">
+                    <i class="fa-solid fa-house"></i>
+                </a>
+                <button id="logout-btn" class="addToCart" style="width: auto; padding: 8px 15px; background-color: #dc3545; border: none; color: white; border-radius: 5px; cursor: pointer;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
             </div>
         </div>
     </nav>
 
     <div class="profile-wrapper">
         <div class="profile-header">
-            <h1 class="h1" style="font-size:25px; font-weight:600;">Your Account</h1>
-            <p class="user-welcome">Hello, <span id="user-display-name">Loading...</span> (<span id="user-display-email">...</span>)</p>
+            <h1 class="h1" style="font-size:25px; font-weight:600; text-align: left;">Your Account</h1>
+            <p class="user-welcome" style="text-align: left;">Hello, <span id="user-display-name">Loading...</span> (<span id="user-display-email">...</span>)</p>
         </div>
 
         <div class="amazon-grid">
-            
             <div class="profile-card" onclick="location.href='#orders-section'">
                 <div class="card-icon"><i class="fa-solid fa-box-open"></i></div>
                 <div class="card-info">
@@ -98,7 +97,6 @@
                     <p>Contact our customer care 24/7</p>
                 </div>
             </div>
-
         </div>
 
         <div id="orders-section" class="profile-details-section">
@@ -107,27 +105,27 @@
                 <p class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Fetching your orders from database...</p>
             </div>
         </div>
+
         <div id="security-section" class="profile-details-section" style="margin-top: 30px;">
-    <h2 class="section-title"><i class="fa-solid fa-user-gear"></i> Login & Security (Edit Profile)</h2>
-    <form id="edit-profile-form" style="text-align: left; display: flex; flex-direction: column; gap: 15px; max-width: 500px; justify-content: center; align-items: center;>
-        
-        <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="text-align: left; font-weight: 600;">Update Full Name</label>
-            <input type="text" id="update-name" placeholder="Enter new name" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
-        </div>
+            <h2 class="section-title"><i class="fa-solid fa-user-gear"></i> Login & Security (Edit Profile)</h2>
+            <form id="edit-profile-form" style="text-align: left; display: flex; flex-direction: column; gap: 15px; max-width: 500px; justify-content: center;">
+                
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="text-align: left; font-weight: 600; width: 100%;">Update Full Name</label>
+                    <input type="text" id="update-name" placeholder="Enter new name" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                </div>
 
-        <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
-            <label style="text-align: left; font-weight: 600;">Mobile Number</label>
-            <input type="tel" id="update-phone" placeholder="Enter mobile number" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
-        </div>
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="text-align: left; font-weight: 600; width: 100%;">Mobile Number</label>
+                    <input type="tel" id="update-phone" placeholder="Enter mobile number" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                </div>
 
-        <button type="submit" class="addToCart" style="width: fit-content; padding: 10px 20px; background-color: #007bff; margin-top: 10px;">
-            <i class="fa-solid fa-floppy-disk"></i> Save Changes
-        </button>
-        <p id="update-status" style="font-size: 13px; font-weight: 600; margin-top: 5px;"></p>
-    </form>
+                <button type="submit" class="addToCart" style="width: fit-content; padding: 10px 20px; background-color: #007bff; margin-top: 10px; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                </button>
+                <p id="update-status" style="font-size: 13px; font-weight: 600; margin-top: 5px; text-align: left;"></p>
+            </form>
         </div>
-        
     </div>
 
     <script src="profile.js" type="module"></script>
