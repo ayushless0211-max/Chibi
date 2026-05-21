@@ -24,6 +24,8 @@ const userNameDisplay = document.getElementById('user-display-name');
 const userEmailDisplay = document.getElementById('user-display-email');
 const ordersContainer = document.getElementById('orders-container');
 const logoutBtn = document.getElementById('logout-btn');
+// profile.js ke top par baki elements ke sath ise bhi jod do
+const profileBody = document.getElementById('profile-body');
 
 // Edit Profile Elements mapping
 const editProfileForm = document.getElementById('edit-profile-form');
@@ -31,22 +33,28 @@ const updateNameInput = document.getElementById('update-name');
 const updateStatus = document.getElementById('update-status');
 
 // 1. Session Tracker (Gets triggered automatically when page loads)
+// 1. Updated Secure Session Tracker change 1 by p
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // User system me active hai, UI labels content update karo
+        // User logged in hai! Ab screen content set karo
         userNameDisplay.textContent = user.displayName || "Anime Fan";
         userEmailDisplay.textContent = user.email;
         
-        // Input box me purana naam pre-fill kar do
         if (user.displayName) {
             updateNameInput.value = user.displayName;
         }
         
-        // Firestore queries hit karo user id matching parameters par
+        // ⚡ SECURE FIX: Jab user verified ho jaye, tabhi page ko show karo
+        if (profileBody) {
+            profileBody.style.display = "block";
+        }
+        
+        // Firestore se orders lekar aao
         fetchUserOrders(user.uid);
     } else {
-        // Agar bina login koi profile kholne ki koshish kare, toh home page throw karo
-        window.location.href = "index.html";
+        // ⚡ SECURE FIX: Agar logged out hai, toh bina layout dikhaye turant bhagao
+        window.location.replace("index.html"); 
+        // Note: replace() use karne se user 'back' button daba kar firse profile par nahi aa payega
     }
 });
 
