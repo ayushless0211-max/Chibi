@@ -53,7 +53,7 @@ onAuthStateChanged(auth, (user) => {
         fetchUserOrders(user.uid);
     } else {
         // ⚡ SECURE FIX: Agar logged out hai, toh bina layout dikhaye turant bhagao
-        window.location.replace("index.html"); 
+        window.location.replace("login.html"); 
         // Note: replace() use karne se user 'back' button daba kar firse profile par nahi aa payega
     }
 });
