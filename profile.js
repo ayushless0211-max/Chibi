@@ -1,7 +1,7 @@
 // Firebase v12 SDK imports directly using your exact version urls
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 // ✅ Your exact Firebase web configuration loaded safely
 const firebaseConfig = {
@@ -25,12 +25,22 @@ const userEmailDisplay = document.getElementById('user-display-email');
 const ordersContainer = document.getElementById('orders-container');
 const logoutBtn = document.getElementById('logout-btn');
 
+// Edit Profile Elements mapping
+const editProfileForm = document.getElementById('edit-profile-form');
+const updateNameInput = document.getElementById('update-name');
+const updateStatus = document.getElementById('update-status');
+
 // 1. Session Tracker (Gets triggered automatically when page loads)
 onAuthStateChanged(auth, (user) => {
     if (user) {
         // User system me active hai, UI labels content update karo
         userNameDisplay.textContent = user.displayName || "Anime Fan";
         userEmailDisplay.textContent = user.email;
+        
+        // Input box me purana naam pre-fill kar do
+        if (user.displayName) {
+            updateNameInput.value = user.displayName;
+        }
         
         // Firestore queries hit karo user id matching parameters par
         fetchUserOrders(user.uid);
@@ -44,8 +54,9 @@ onAuthStateChanged(auth, (user) => {
 async function fetchUserOrders(userId) {
     try {
         const ordersRef = collection(db, "orders");
-        // Apne target documents find karega jahan userId current user se match ho
-        const q = query(ordersRef, where("userId", "==", userId), orderBy("createdAt", "desc"));
+        
+        // 🛠️ FIX: orderBy hata diya taaki Index Error na aaye aur orders turant fetch hon
+        const q = query(ordersRef, where("userId", "==", userId));
         const querySnapshot = await getDocs(q);
 
         ordersContainer.innerHTML = "";
@@ -58,35 +69,49 @@ async function fetchUserOrders(userId) {
             return;
         }
 
+        // Sabhi orders ko ek array me store karenge taaki JS se sort kar sakein
+        let allOrders = [];
         querySnapshot.forEach((doc) => {
-            const orderData = doc.data();
+            allOrders.push({ id: doc.id, ...doc.data() });
+        });
+
+        // ⚡ Client-Side Sorting: Naye orders ko bina error ke upar dikhane ke liye
+        allOrders.sort((a, b) => {
+            const dateA = a.createdAt ? a.createdAt.seconds : 0;
+            const dateB = b.createdAt ? b.createdAt.seconds : 0;
+            return dateB - dateA;
+        });
+
+        // Render sorted orders layout
+        allOrders.forEach((orderData) => {
             const orderDate = orderData.createdAt ? new Date(orderData.createdAt.seconds * 1000).toLocaleDateString() : "Recent";
             
-            // Render sub-items structure loops inside each transaction order card
-            orderData.items.forEach(item => {
-                const orderHtml = `
-                    <div class="order-block">
-                        <div class="order-meta-header">
-                            <div>ORDER PLACED: <strong>${orderDate}</strong></div>
-                            <div>TOTAL: <strong>₹${orderData.totalAmount || item.price}</strong></div>
-                            <div>ORDER ID: #<span>${doc.id.substring(0,8).toUpperCase()}</span></div>
-                        </div>
-                        <div class="order-items-wrapper">
-                            <div class="order-item-row">
-                                <img src="${item.image || 'https://via.placeholder.com/60'}" alt="product">
-                                <div class="order-item-details">
-                                    <h4>${item.title || item.name}</h4>
-                                    <p class="user-welcome" style="margin: 2px 0;">Quantity: ${item.quantity || 1}</p>
-                                    <span class="order-status-badge">
-                                        <i class="fa-solid fa-truck-fast"></i> Processing Delivery
-                                    </span>
+            if (orderData.items && Array.isArray(orderData.items)) {
+                orderData.items.forEach(item => {
+                    const orderHtml = `
+                        <div class="order-block">
+                            <div class="order-meta-header">
+                                <div>ORDER PLACED: <strong>${orderDate}</strong></div>
+                                <div>TOTAL: <strong>₹${orderData.totalAmount || item.price}</strong></div>
+                                <div>ORDER ID: #<span>${orderData.id.substring(0,8).toUpperCase()}</span></div>
+                            </div>
+                            <div class="order-items-wrapper">
+                                <div class="order-item-row">
+                                    <img src="${item.image || 'https://via.placeholder.com/60'}" alt="product">
+                                    <div class="order-item-details">
+                                        <h4>${item.title || item.name}</h4>
+                                        <p class="user-welcome" style="margin: 2px 0; font-size: 13px;">Quantity: ${item.quantity || 1}</p>
+                                        <span class="order-status-badge">
+                                            <i class="fa-solid fa-truck-fast"></i> Processing Delivery
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-                ordersContainer.insertAdjacentHTML('beforeend', orderHtml);
-            });
+                    `;
+                    ordersContainer.insertAdjacentHTML('beforeend', orderHtml);
+                });
+            }
         });
 
     } catch (error) {
@@ -98,7 +123,46 @@ async function fetchUserOrders(userId) {
     }
 }
 
-// 3. User termination action (Logout session end)
+// 3. Edit Profile Form Submission Engine (Save Changes)
+editProfileForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newName = updateNameInput.value.trim();
+    const currentUser = auth.currentUser;
+
+    if (!newName) {
+        updateStatus.style.color = "#dc3545";
+        updateStatus.textContent = "Name cannot be empty!";
+        return;
+    }
+
+    if (currentUser) {
+        try {
+            updateStatus.style.color = "#007bff";
+            updateStatus.textContent = "Saving changes...";
+
+            // Firebase Auth me Profile update logic execute karo
+            await updateProfile(currentUser, {
+                displayName: newName
+            });
+
+            // UI Refresh setup
+            userNameDisplay.textContent = newName;
+            updateStatus.style.color = "#03543f";
+            updateStatus.textContent = "Profile updated successfully! 🎉";
+
+        } catch (error) {
+            console.error("Profile update error:", error);
+            updateStatus.style.color = "#dc3545";
+            updateStatus.textContent = "Error: " + error.message;
+        }
+    }
+});
+
+// 4. User termination action (Logout session end)
 logoutBtn.addEventListener('click', () => {
     signOut(auth).then(() => {
-        window.location.href =
+        window.location.href = "index.html";
+    }).catch((error) => {
+        alert("Logout break error: " + error.message);
+    });
+});
