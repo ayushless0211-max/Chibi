@@ -35,7 +35,7 @@
 
 .profile-card {
     background-color: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 0px solid #e2e8f0; /*here b*/
     border-radius: 0;/*here p*/
     padding: 20px;
     display: flex;
