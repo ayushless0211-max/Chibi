@@ -1,4 +1,46 @@
+// 🌐 1. Dynamic Injection of Global Preloader Container Instantly 
+(function createGlobalLoader() {
+    const globalLoader = document.createElement('div');
+    globalLoader.id = 'globalStoreLoader';
+    
+    // Pure inline layout structure style safely handled inside JS blocks
+    globalLoader.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; transition: opacity 0.3s ease, visibility 0.3s ease;";
+    
+    globalLoader.innerHTML = `
+        <img style="width: 200px; height: 200px; object-fit: cover;" src="giphy.gif" alt="loading image"/>
+        <p style="font-family: sans-serif; color: #475569; font-size: 18px; font-weight: 500; margin: 0;">
+            Loading your dream store...
+        </p>
+    `;
+    
+    document.body.insertBefore(globalLoader, document.body.firstChild);
+})();
+
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // 🍔 Sidebar Sidebar Drawer Interactivity
+    const sideMenu = document.getElementById("sideMenu");
+    const menuBackdrop = document.getElementById("menuBackdrop");
+    const menuOpenBtn = document.getElementById("menuOpenBtn");
+    const menuCloseBtn = document.getElementById("menuCloseBtn");
+
+    if (menuOpenBtn && sideMenu && menuBackdrop) {
+        menuOpenBtn.addEventListener("click", () => {
+            sideMenu.classList.add("is-active");
+            menuBackdrop.classList.add("is-active");
+        });
+    }
+
+    if (menuCloseBtn && sideMenu && menuBackdrop) {
+        const closeMenu = () => {
+            sideMenu.classList.remove("is-active");
+            menuBackdrop.classList.remove("is-active");
+        };
+        menuCloseBtn.addEventListener("click", closeMenu);
+        menuBackdrop.addEventListener("click", closeMenu);
+    }
+
+    // ⚔️ Dynamic Image Carousel System
     const slides = document.querySelectorAll(".carousel-slide");
     const dots = document.querySelectorAll(".carousel-dots .dot");
     const prevBtn = document.getElementById("prevBanner");
@@ -8,13 +50,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let carouselInterval;
 
     function showSlide(index) {
-        // Reset current active states
+        if(slides.length === 0) return;
+        
         slides.forEach(slide => slide.classList.remove("active"));
         dots.forEach(dot => dot.classList.remove("active"));
         
-        // Loop controls boundary check
         if (index >= slides.length) currentSlideIndex = 0;
-        if (index < 0) currentSlideIndex = slides.length - 1;
+        else if (index < 0) currentSlideIndex = slides.length - 1;
+        else currentSlideIndex = index;
         
         slides[currentSlideIndex].classList.add("active");
         dots[currentSlideIndex].classList.add("active");
@@ -30,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
         showSlide(currentSlideIndex);
     }
 
-    // Click Events mapping
     if (nextBtn && prevBtn) {
         nextBtn.addEventListener("click", () => {
             handleNext();
@@ -42,7 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Dot indicators configuration
     dots.forEach((dot, idx) => {
         dot.addEventListener("click", () => {
             currentSlideIndex = idx;
@@ -51,9 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Auto running rotation engine
     function startTimer() {
-        carouselInterval = setInterval(handleNext, 4000); // Har 4 second me slide change hogi
+        carouselInterval = setInterval(handleNext, 4000);
     }
 
     function resetTimer() {
@@ -61,50 +101,17 @@ document.addEventListener("DOMContentLoaded", () => {
         startTimer();
     }
 
-    // Initialize
     if(slides.length > 0) {
         startTimer();
     }
 });
 
-window.addEventListener("load", () => {
-    const preloader = document.getElementById("anime-preloader");
-    if (preloader) {
-        // thoda sa minimal buffer timeout (300ms) taaki animation sudden break na ho
-        setTimeout(() => {
-            preloader.classList.add("fade-out");
-        }, 300);
-    }
-});
-
-// 🌐 1. DOM/Script load hote hi Global Preloader ko Inline Styles ke sath create karo
-(function createGlobalLoader() {
-    const globalLoader = document.createElement('div');
-    globalLoader.id = 'globalStoreLoader';
-    
-    // Pure inline CSS bina kisi external stylesheet ke
-    globalLoader.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; transition: opacity 0.3s ease, visibility 0.3s ease;";
-    
-    // HTML Elements inject karo (Giphy + Text)
-    globalLoader.innerHTML = `
-        <img style="width: 200px; height: 200px; object-fit: cover;" src="giphy.gif" alt="loading image"/>
-        <p style="font-family: sans-serif; color: #475569; font-size: 18px; font-weight: 500; margin: 0;">
-            Loading your dream store...
-        </p>
-    `;
-    
-    // Body me sabse upar daal do
-    document.body.insertBefore(globalLoader, document.body.firstChild);
-})();
-
-// ⚡ 2. Jab window (saari images, banners, HTML) poori tarah load ho jaye, tab loader mitao
+// ⚡ 2. Fade Out Global Preloader safely when full content finishes retrieval updates
 window.addEventListener("load", () => {
     const loader = document.getElementById('globalStoreLoader');
     if (loader) {
-        loader.style.opacity = '0'; // Dheere se fade out hoga
+        loader.style.opacity = '0';
         loader.style.visibility = 'hidden';
-        
-        // 300ms ke baad DOM se permanently delete kar do
         setTimeout(() => {
             loader.remove();
         }, 300);
