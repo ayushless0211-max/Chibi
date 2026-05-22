@@ -46,8 +46,71 @@
         <p style="font-family: sans-serif; color: #475569; font-size: 18px; font-weight: 500;">Loading your dream store...</p>
     </div>
 
-    <main id="dynamicStorefront" style="padding: 20px 0; min-height: 400px; position: relative;">
-        </main>
+    <section class="hero-discovery-container">
+    
+    <div class="banner-carousel-box">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="carousel-slide active">
+                <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800" alt="Banner 1">
+                <div class="banner-overlay-text">Epic Chibi Arrivals! ✨</div>
+            </div>
+            <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800" alt="Banner 2">
+                <div class="banner-overlay-text">Flat 20% Off on Demon Slayer! ⚔️</div>
+            </div>
+            <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=800" alt="Banner 3">
+                <div class="banner-overlay-text">Limited Jujutsu Kaisen Stock 🔴</div>
+            </div>
+        </div>
+        
+        <button class="carousel-arrow prev" id="prevBanner">&lt;</button>
+        <button class="carousel-arrow next" id="nextBanner">&gt;</button>
+        
+        <div class="carousel-dots" id="carouselDots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+
+    <div class="anime-news-ticker-box">
+        <div class="news-header-title">
+            <i class="fa-solid fa-fire animate-pulse"></i> Anime News Flash
+        </div>
+        <div class="news-ticker-wrapper">
+            <div class="news-ticker-track" id="newsTrack">
+                <div class="news-item">🔥 Chainsaw Man Season 2 Movie Adaptation Confirmed!</div>
+                <div class="news-item">🌟 Demon Slayer Infinity Castle Arc Ticket Bookings Live Soon!</div>
+                <div class="news-item">⚡ Jujutsu Kaisen Manga Reaches Historic 100M Copies.</div>
+                <div class="news-item">🦊 New Naruto Special Episodes Delayed for Animation Polish.</div>
+                <div class="news-item">🧪 Dr. STONE Final Season Part 1 Airing Update Inside!</div>
+                <div class="news-item">🔥 Chainsaw Man Season 2 Movie Adaptation Confirmed!</div>
+                <div class="news-item">🌟 Demon Slayer Infinity Castle Arc Ticket Bookings Live Soon!</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="horizontal-product-section">
+    <div class="section-header-row">
+        <h2><i class="fa-solid fa-bolt" style="color: #ffc107;"></i> Trending Products</h2>
+        <a href="store.html" class="view-all-link">View Store <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="horizontal-scroll-row" id="trendingProductsContainer">
+        <p class="loading-placeholder">Loading hot drops...</p>
+    </div>
+</section>
+
+<section class="horizontal-product-section" style="margin-bottom: 40px;">
+    <div class="section-header-row">
+        <h2><i class="fa-solid fa-clock-rotate-left" style="color: #007bff;"></i> Recently Viewed</h2>
+    </div>
+    <div class="horizontal-scroll-row" id="recentProductsContainer">
+        <p class="loading-placeholder">Items you checked out recently will appear here.</p>
+    </div>
+</section>
+
 
 </body>
 <script type="module" src="script.js"></script>
