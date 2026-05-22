@@ -1,11 +1,16 @@
-* {}
+* {
+    box-sizing: border-box;
+}
 
 .description {
   font-size: 15px;
 }
 body {
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 10px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    background-color: #f8fafc;
 }
 .h1 {
   margin-top: 25px;
@@ -14,64 +19,49 @@ body {
   border-bottom: 2px solid #f1f5f9;
   padding-bottom: 10px;
 }
-/* Base triangle shape setup */
+
 .triangle-back-btn {
   width: 0;
   height: 0;
   border-top: 15px solid transparent;
   border-bottom: 15px solid transparent;
-  border-right: 25px solid #333333; /* Change this hex code to alter the button color */
+  border-right: 25px solid #333333;
   background: transparent;
   padding: 0;
   margin: 0;
   cursor: pointer;
   border-left: none;
   display: inline-block;
-  will-change: transform; /* Prepares browser for smooth animation performance */
+  will-change: transform;
 }
 
-/* Trigger the bounce animation on hover */
 .triangle-back-btn:hover {
   animation: triangleBounce 0.6s ease-out;
 }
 
-/* Physics sequence optimized for leftward movement */
 @keyframes triangleBounce {
-  0% {
-    transform: translateX(0);
-  }
-  20% {
-    transform: translateX(-12px); /* Initial spring backward */
-  }
-  40% {
-    transform: translateX(0);
-  }
-  60% {
-    transform: translateX(-5px);  /* Secondary micro-bounce */
-  }
-  80% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(0);
-  }
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-12px); }
+  40% { transform: translateX(0); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(0); }
+  100% { transform: translateX(0); }
 }
 
-
 .product {
-	margin-top: 30px;
+  margin-top: 30px;
   padding-top: 5px;
   border: 0px solid black;
   padding-bottom: 5px;
-	display: flex;
-	gap: 10px;
-	justify-content: space-between;
-	padding-right: 0px;
-	overflow-x: auto;
-	scrollbar-width: none; 
-    -ms-overflow-style: none; 
-    -webkit-overflow-scrolling: touch; 
-	height: auto;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  padding-right: 0px;
+  overflow-x: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+  -webkit-overflow-scrolling: touch; 
+  height: auto;
 }
 
 .product::-webkit-scrollbar {
@@ -87,38 +77,35 @@ body {
   border: 0px solid black;
   justify-content: center;
   align-items: center;
-	padding-bottom: 10px;
-	width: auto;
+  padding-bottom: 10px;
+  width: auto;
 }
 
 .card img {
-   display: block;
+    display: block;
     margin-left: 0;
     margin-right: 0;
-	width: 160px;
-	height: auto;
-	max-width:600px;
-	
+    width: 160px;
+    height: auto;
+    max-width:600px;
 }
 
 .card + .card {
-	border-left: 0px solid black;
-	padding-left: 10px;}
+  border-left: 0px solid black;
+  padding-left: 10px;
+}
 
 .navbar {
-	padding: 10px 15px;
+  padding: 10px 15px;
   background-color: #ffffff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-	}
+}
 
 .nav-actions {
-	display:flex;
-	justify-content: flex-end;
-	align-items: center;
-	display: flex;
-	align-items: center;
-	gap: 50px;
-	}
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 	
 #login-btn {
   background-color: #007bff;
@@ -128,13 +115,13 @@ body {
   padding: 8px 20px;
   font-size: 16px;
   font-weight: 600;
-  border-radius: 0px; /*here*/
+  border-radius: 0px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }	
 
 .menu-btn {
-  background-size: none;
+  background: none;
   border: none;
   cursor: pointer;
   display: flex;
@@ -145,7 +132,6 @@ body {
   padding: 0;
 }
 
-/* Styles the individual lines */
 .menu-btn span {
   display: block;
   width: 100%;
@@ -167,7 +153,6 @@ body {
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }	
 
-/* 1. Dark Backdrop Overlay */
 .menu-backdrop {
   position: fixed;
   top: 0;
@@ -176,41 +161,36 @@ body {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(3px);
-  z-index: 998; /* Just below the sidebar panel */
+  z-index: 998;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
 }
 
-/* 2. Slide-out Panel Container */
 .side-menu {
   position: fixed;
   top: 0;
   left: 0;
-  width: 300px; /* Width of the menu drawer */
+  width: 300px;
   height: 100%;
   background-color: #ffffff;
   box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
-  z-index: 999; /* Stays on top of everything */
+  z-index: 999;
   display: flex;
   flex-direction: column;
-  
-  /* Initial off-screen left position */
   transform: translateX(-100%); 
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Ultra smooth slide */
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 3. The Active Toggle Utility Classes */
 .menu-backdrop.is-active {
   opacity: 1;
   pointer-events: auto;
 }
 
 .side-menu.is-active {
-  transform: translateX(0); /* Slides onto the screen */
+  transform: translateX(0);
 }
 
-/* 4. Inside Layout Styling */
 .menu-header {
   padding: 20px;
   display: flex;
@@ -240,41 +220,40 @@ body {
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 15px; /* Spaces out icons and text labels */
+  gap: 15px;
   transition: all 0.2s ease;
 }
 
-/* Hover and active states for sidebar navigation entries */
 .menu-links a:hover, 
 .menu-links a.active {
   background-color: #f4f6f9;
   color: #007bff;
-  padding-left: 35px; /* Subtle push right on hover */
+  padding-left: 35px;
 }
 
-/* Yeh line cards ko wapas barabar size aur normal color me layegi */
 .card-link-wrapper {
   flex: 1 1 0; 
   width: 0;
-  text-decoration: none; /* Underline hatane ke liye */
-  color: inherit;         /* Text color normal rakhne ke liye */
+  text-decoration: none;
+  color: inherit;
 }
 
-/* --- Hero Block (Banner + News Side-by-Side Grid) --- */
+/* --- ⚡ Side-By-Side Strict Scaling Rules (Banners + News Ticker) --- */
 .hero-discovery-container {
     display: grid;
-    grid-template-columns: 2fr 1fr; /* Left section is double the size of right */
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: 1.8fr 1.2fr; /* Hamesha side by side content rakhega */
+    gap: 15px;
+    padding: 15px;
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
     box-sizing: border-box;
 }
 
-/* 1. Left Sliding Banner styling */
 .banner-carousel-box {
     position: relative;
-    height: 350px;
+    aspect-ratio: 16 / 10; /* Size flexible scale down hone ke liye */
+    max-height: 380px;
     border-radius: 12px;
     overflow: hidden;
     background-color: #e2e8f0;
@@ -316,79 +295,71 @@ body {
     width: 100%;
     background: linear-gradient(transparent, rgba(0,0,0,0.8));
     color: white;
-    padding: 25px 20px;
-    font-size: 22px;
+    padding: 15px;
+    font-size: clamp(14px, 2.2vw, 22px); /* Screen ke according text scale hoga */
     font-weight: 700;
     text-align: left;
 }
 
-/* Carousel Control Elements */
 .carousel-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     background: rgba(255, 255, 255, 0.8);
     border: none;
-    width: 40px;
-    height: 40px;
+    width: clamp(30px, 4vw, 40px);
+    height: clamp(30px, 4vw, 40px);
     border-radius: 50%;
     cursor: pointer;
     z-index: 10;
     font-weight: bold;
-    font-size: 16px;
-    transition: background 0.2s;
+    font-size: clamp(12px, 1.5vw, 16px);
 }
-
-.carousel-arrow:hover { background: #ffffff; }
-.carousel-arrow.prev { left: 15px; }
-.carousel-arrow.next { right: 15px; }
+.carousel-arrow.prev { left: 10px; }
+.carousel-arrow.next { right: 10px; }
 
 .carousel-dots {
     position: absolute;
-    bottom: 15px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 8px;
+    gap: 6px;
     z-index: 10;
 }
-
 .carousel-dots .dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background: rgba(255,255,255,0.5);
     border-radius: 50%;
-    cursor: pointer;
 }
-
 .carousel-dots .dot.active {
     background: #007bff;
-    width: 20px;
-    border-radius: 4px;
+    width: 15px;
+    border-radius: 3px;
     transition: width 0.3s;
 }
 
-/* 2. Right Constantly Scrolling News Ticker styling */
 .anime-news-ticker-box {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    height: 350px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    height: 100%; /* Sinks exactly with the height of left container */
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .news-header-title {
     background: #1e293b;
     color: #ffffff;
-    padding: 12px 15px;
+    padding: 10px 12px;
     font-weight: 700;
-    font-size: 15px;
+    font-size: clamp(12px, 1.8vw, 15px);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .animate-pulse {
@@ -398,7 +369,7 @@ body {
 
 @keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+    50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
 
@@ -406,115 +377,92 @@ body {
     flex: 1;
     overflow: hidden;
     position: relative;
-    padding: 10px 0;
 }
 
-/* Infinite loop system CSS transition */
 .news-ticker-track {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     position: absolute;
     width: 100%;
+    padding: 10px 0;
     animation: scrollUpNews 20s linear infinite;
 }
-
 .news-ticker-track:hover {
-    animation-play-state: paused; /* User mouse hover karega toh news ruk jayegi */
+    animation-play-state: paused;
 }
 
 @keyframes scrollUpNews {
     0% { top: 0; }
-    100% { top: -250px; } /* Adjust strictly based on text elements length */
+    100% { top: -240px; }
 }
 
 .news-item {
-    padding: 12px 15px;
-    margin: 0 12px;
+    padding: 10px;
+    margin: 0 10px;
     background: #f8fafc;
     border-left: 4px solid #007bff;
     border-radius: 0 6px 6px 0;
-    font-size: 13px;
+    font-size: clamp(11px, 1.5vw, 13px);
     font-weight: 600;
     color: #334155;
-    text-align: left;
-    line-height: 1.4;
-    cursor: pointer;
-    transition: background 0.2s;
+    line-height: 1.3;
 }
 
-.news-item:hover {
-    background: #f1f5f9;
-}
-
-/* --- 3 & 4. Horizontal Product Cards Layout Rows --- */
+/* --- Horizontal Product Sections --- */
 .horizontal-product-section {
     max-width: 1200px;
-    margin: 30px auto 0 auto;
-    padding: 0 20px;
-    box-sizing: border-box;
+    margin: 25px auto 0 auto;
+    padding: 0 15px;
 }
 
 .section-header-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .section-header-row h2 {
-    font-size: 20px;
+    font-size: clamp(16px, 2.2vw, 20px);
     font-weight: 700;
     color: #1e293b;
     margin: 0;
 }
 
 .view-all-link {
-    font-size: 14px;
+    font-size: clamp(12px, 1.6vw, 14px);
     font-weight: 600;
     color: #007bff;
     text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 5px;
 }
 
-/* Horizontal track logic (PC me full screen, mobile pe swipe scroll) */
 .horizontal-scroll-row {
     display: flex;
     gap: 15px;
     overflow-x: auto;
-    padding: 10px 5px 15px 5px;
-    scroll-behavior: smooth;
-    scrollbar-width: none; /* Hide standard scrollbar Firefox */
+    padding: 5px 0 15px 0;
+    scrollbar-width: none; 
 }
-
 .horizontal-scroll-row::-webkit-scrollbar {
-    display: none; /* Hide scrollbar Chrome/Safari */
+    display: none;
 }
 
-/* Card item structural sizing overrides within horizontal track */
 .horizontal-scroll-row .product-card {
-    min-width: 220px; /* Forces cards to stay wide inside flexible block */
-    max-width: 220px;
+    min-width: clamp(160px, 25vw, 220px);
+    max-width: clamp(160px, 25vw, 220px);
     flex-shrink: 0;
 }
 
-/* 📱 Responsive Media Queries for Tablets and Mobile devices */
-@media (max-width: 850px) {
+/* 📱 Micro Scaling Adjustments for ultra-small mobile monitors */
+@media (max-width: 500px) {
     .hero-discovery-container {
-        grid-template-columns: 1fr; /* Mobile aur tab par elements vertically stack honge */
+        grid-template-columns: 1.6fr 1.4fr; /* Balanced layout side-by-side scale */
+        gap: 8px;
+        padding: 8px;
     }
-    .banner-carousel-box {
-        height: 260px;
-    }
-    .anime-news-ticker-box {
-        height: 220px;
-    }
-    @keyframes scrollUpNews {
-        0% { top: 0; }
-        100% { top: -300px; }
+    .news-item {
+        margin: 0 5px;
+        padding: 6px;
     }
 }
-
-
