@@ -181,7 +181,7 @@ body {
     border-radius: 0px;
     overflow: hidden;
     background-color: #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .carousel-track {
@@ -273,7 +273,7 @@ body {
     flex-direction: column;
     overflow: hidden;
     height: 220px; /* Mobile par clean news cylinder height */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .news-header-title {
