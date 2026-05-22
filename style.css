@@ -157,3 +157,201 @@ body {
   text-decoration: none;
   color: inherit;
 } 
+
+/* --- ⚡ Responsive Hero Block (Badi Screen me Side-by-Side, Choti me Upar-Niche) --- */
+.hero-discovery-container {
+    display: grid;
+    /* Default: Mobile aur tablet par ek ke upar ek single column rahega */
+    grid-template-columns: 1fr; 
+    gap: 15px;
+    padding: 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 1. Left Sliding Banner styling */
+.banner-carousel-box {
+    position: relative;
+    width: 100%;
+    /* Mobile par banner ki height fix rakhenge taaki zyada bada na dikhe */
+    height: 240px; 
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.carousel-track {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    z-index: 1;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    z-index: 2;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.banner-overlay-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: white;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    font-weight: bold;
+    font-size: 14px;
+}
+.carousel-arrow.prev { left: 10px; }
+.carousel-arrow.next { right: 10px; }
+
+.carousel-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+}
+.carousel-dots .dot {
+    width: 6px;
+    height: 6px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+}
+.carousel-dots .dot.active {
+    background: #007bff;
+    width: 15px;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+/* 2. Right News Ticker Styling */
+.anime-news-ticker-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 220px; /* Mobile par clean news cylinder height */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.news-header-title {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 10px 12px;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.animate-pulse {
+    animation: pulse 1.5s infinite;
+    color: #ff5722;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.news-ticker-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.news-ticker-track {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    width: 100%;
+    padding: 10px 0;
+    animation: scrollUpNews 20s linear infinite;
+}
+.news-ticker-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scrollUpNews {
+    0% { top: 0; }
+    100% { top: -240px; }
+}
+
+.news-item {
+    padding: 10px;
+    margin: 0 10px;
+    background: #f8fafc;
+    border-left: 4px solid #007bff;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    line-height: 1.3;
+}
+
+/* 🖥️ PC Aur Badi Screens Ke Liye Media Query (Yahan Layout Side-By-Side Hoga) */
+@media (min-width: 800px) {
+    .hero-discovery-container {
+        /* Badi screen par 2 columns ho jayenge (Carousel bada, News chota) */
+        grid-template-columns: 2fr 1fr; 
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .banner-carousel-box {
+        height: 380px; /* Laptop par bada aspect ratio aur screen space */
+    }
+
+    .banner-overlay-text {
+        font-size: 22px;
+        padding: 20px;
+    }
+
+    .anime-news-ticker-box {
+        height: 380px; /* Laptop par news cylinder banner ke height jitna bada hoga */
+    }
+}
