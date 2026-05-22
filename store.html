@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Chibi Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="menu-backdrop" id="menuBackdrop"></div>
+
+    <aside class="side-menu" id="sideMenu">
+      <div class="menu-header">
+        <button class="menu-close-btn" id="menuCloseBtn">&times;</button>
+      </div>
+      <nav class="menu-links">
+        <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="#"><i class="fa-solid fa-store"></i> Shop</a>
+        <a href="#"><i class="fa-solid fa-tags"></i> Offers</a>
+        <a href="profile.html"><i class="fa-solid fa-envelope"></i> Profile</a>
+        <a href="#"><i class="fa-solid fa-envelope"></i> Contact Us</a>
+      </nav>
+    </aside>
+
+    <nav class="navbar">
+      <div class="nav-actions">
+        <button class="menu-btn" id="menuOpenBtn">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+<!--here-->
+        <div class="login-cart-btn" style="margin-left:auto; display: flex;">
+          <a href="login.html" id="cart-nav-btn" style="border-radius: 0px; padding: 8px 20px; background-color: #007bff; margin-right: 0px; font-size: 16px; color: #ffffff; text-decoration: none; display: flex; align-items: center;">
+            <i class="fa-solid fa-cart-shopping"></i>
+          </a>
+          <a href="login.html" id="login-btn">Log In</a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="globalStoreLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.3s ease;">
+        <img style="width:200px; height: 200px; object-fit: cover;" src="giphy.gif" alt="loading image"/>
+        <p style="font-family: sans-serif; color: #475569; font-size: 18px; font-weight: 500;">Loading your dream store...</p>
+    </div>
+
+    <main id="dynamicStorefront" style="padding: 20px 0; min-height: 400px; position: relative;">
+        </main>
+
+</body>
+<script type="module" src="script.js"></script>
+</html>
