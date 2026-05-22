@@ -1,4 +1,4 @@
-// 📦 1. Firebase Configuration (Tumhare credentials ke sath configured)
+// 📦 1. Firebase Modules Import & Config Setup
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -11,11 +11,10 @@ const firebaseConfig = {
     appId: "1:426927884345:web:a2e7dcfb81c9715860e5e8"
 };
 
-// Initialize Firebase & Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🌐 2. Dynamic Injection of Global Preloader Container Instantly 
+// 🌐 2. Dynamic Instant Preloader
 (function createGlobalLoader() {
     const globalLoader = document.createElement('div');
     globalLoader.id = 'globalStoreLoader';
@@ -29,7 +28,7 @@ const db = getFirestore(app);
     document.body.insertBefore(globalLoader, document.body.firstChild);
 })();
 
-// Helper: Array Shuffle Algorithm (Random Order ke liye)
+// Shuffle Algorithm (Random Products Order Ke Liye)
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -38,7 +37,7 @@ function shuffleArray(array) {
     return array;
 }
 
-// HTML Card Component Generator
+// Card HTML Template Generator
 function createProductCardHTML(product) {
     return `
         <div class="card product-card">
@@ -50,10 +49,10 @@ function createProductCardHTML(product) {
     `;
 }
 
-// 🏗️ Main Control Hub (DOM Ready hone par load hoga)
+// 🏗️ Dom Content Loaded Logic
 document.addEventListener("DOMContentLoaded", async () => {
     
-    // --- 📥 Firebase Fetch Data Functions ---
+    // --- 📥 Firebase Data Loaders ---
     async function loadTrendingProducts() {
         const container = document.getElementById("trendingProductsContainer");
         if (!container) return;
@@ -61,7 +60,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const querySnapshot = await getDocs(collection(db, "products"));
             let allProducts = [];
-
             querySnapshot.forEach((doc) => {
                 allProducts.push({ id: doc.id, ...doc.data() });
             });
@@ -71,7 +69,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // Shuffle the products list randomly
             const randomProducts = shuffleArray(allProducts);
             container.innerHTML = randomProducts.map(prod => createProductCardHTML(prod)).join('');
             
@@ -86,7 +83,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!container) return;
 
         const recentIDs = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
-
         if (recentIDs.length === 0) {
             container.innerHTML = `<p class="loading-placeholder">Items you checked out recently will appear here.</p>`;
             return;
@@ -107,11 +103,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Trigger Fetch Operations
+    // Run Fetches
     await loadTrendingProducts();
     await loadRecentlyViewed();
 
-    // ⚡ Preloader Fade Out Trigger (Content load hone ke baad loader block hatega)
+    // Kill Preloader safely after async tasks finish
     const loader = document.getElementById('globalStoreLoader');
     if (loader) {
         loader.style.opacity = '0';
@@ -119,7 +115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         setTimeout(() => loader.remove(), 300);
     }
 
-    // 🍔 Sidebar Drawer Interactivity Label Controls
+    // 🍔 Menu Drawer Interactivity
     const sideMenu = document.getElementById("sideMenu");
     const menuBackdrop = document.getElementById("menuBackdrop");
     const menuOpenBtn = document.getElementById("menuOpenBtn");
@@ -141,7 +137,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         menuBackdrop.addEventListener("click", closeMenu);
     }
 
-    // ⚔️ Dynamic Sliding Banner Layout Engine
+    // ⚔️ Banner Carousel Logic
     const slides = document.querySelectorAll(".carousel-slide");
     const dots = document.querySelectorAll(".carousel-dots .dot");
     const prevBtn = document.getElementById("prevBanner");
