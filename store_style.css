@@ -1,0 +1,262 @@
+* {
+text-align: center;}
+
+.description {
+  font-size: 15px;
+}
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 10px;
+}
+.h1 {
+  margin-top: 25px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 10px;
+}
+/* Base triangle shape setup */
+.triangle-back-btn {
+  width: 0;
+  height: 0;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-right: 25px solid #333333; /* Change this hex code to alter the button color */
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  border-left: none;
+  display: inline-block;
+  will-change: transform; /* Prepares browser for smooth animation performance */
+}
+
+/* Trigger the bounce animation on hover */
+.triangle-back-btn:hover {
+  animation: triangleBounce 0.6s ease-out;
+}
+
+/* Physics sequence optimized for leftward movement */
+@keyframes triangleBounce {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-12px); /* Initial spring backward */
+  }
+  40% {
+    transform: translateX(0);
+  }
+  60% {
+    transform: translateX(-5px);  /* Secondary micro-bounce */
+  }
+  80% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+
+.product {
+	margin-top: 30px;
+  padding-top: 5px;
+  border: 0px solid black;
+  padding-bottom: 5px;
+	display: flex;
+	gap: 10px;
+	justify-content: space-between;
+	padding-right: 0px;
+	overflow-x: auto;
+	scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    -webkit-overflow-scrolling: touch; 
+	height: auto;
+}
+
+.product::-webkit-scrollbar {
+    display: none; 
+}
+
+.card {
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: #ffffff;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  flex: 1 1 0;
+  border: 0px solid black;
+  justify-content: center;
+  align-items: center;
+	padding-bottom: 10px;
+	width: auto;
+}
+
+.card img {
+   display: block;
+    margin-left: 0;
+    margin-right: 0;
+	width: 160px;
+	height: auto;
+	max-width:600px;
+	
+}
+
+.card + .card {
+	border-left: 0px solid black;
+	padding-left: 10px;}
+
+.navbar {
+	padding: 10px 15px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	}
+
+.nav-actions {
+	display:flex;
+	justify-content: flex-end;
+	align-items: center;
+	display: flex;
+	align-items: center;
+	gap: 50px;
+	}
+	
+#login-btn {
+  background-color: #007bff;
+  margin-left: 15px;
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 0px; /*here*/
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}	
+
+.menu-btn {
+  background-size: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 20px;
+  padding: 0;
+}
+
+/* Styles the individual lines */
+.menu-btn span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: #333333;
+  border-radius: 2px;
+}
+
+.addToCart {
+  background-color: #007bff;
+  width: 100%;
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}	
+
+/* 1. Dark Backdrop Overlay */
+.menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  z-index: 998; /* Just below the sidebar panel */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* 2. Slide-out Panel Container */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px; /* Width of the menu drawer */
+  height: 100%;
+  background-color: #ffffff;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: 999; /* Stays on top of everything */
+  display: flex;
+  flex-direction: column;
+  
+  /* Initial off-screen left position */
+  transform: translateX(-100%); 
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Ultra smooth slide */
+}
+
+/* 3. The Active Toggle Utility Classes */
+.menu-backdrop.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.side-menu.is-active {
+  transform: translateX(0); /* Slides onto the screen */
+}
+
+/* 4. Inside Layout Styling */
+.menu-header {
+  padding: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.menu-close-btn {
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: #333333;
+  padding: 5px 10px;
+}
+
+.menu-links {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.menu-links a {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #444444;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Spaces out icons and text labels */
+  transition: all 0.2s ease;
+}
+
+/* Hover and active states for sidebar navigation entries */
+.menu-links a:hover, 
+.menu-links a.active {
+  background-color: #f4f6f9;
+  color: #007bff;
+  padding-left: 35px; /* Subtle push right on hover */
+}
+
+/* Yeh line cards ko wapas barabar size aur normal color me layegi */
+.card-link-wrapper {
+  flex: 1 1 0; 
+  width: 0;
+  text-decoration: none; /* Underline hatane ke liye */
+  color: inherit;         /* Text color normal rakhne ke liye */
+}
