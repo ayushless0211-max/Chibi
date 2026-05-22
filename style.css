@@ -163,18 +163,15 @@ body {
     display: grid;
     grid-template-columns: 1.8fr 1.2fr; /* Hamesha side by side content rakhega */
     gap: 15px;
-    padding: 0;
-    
     margin-top: 25px;
-    width: 100%;
-    box-sizing: border-box;
+    width: auto;
+    
 }
 
 .banner-carousel-box {
     position: relative;
     aspect-ratio: 16 / 10; /* Size flexible scale down hone ke liye */
     height: 25vh;
-	
     border-radius: 0px; /*here*/
     overflow: hidden;
 	width:45vw;
