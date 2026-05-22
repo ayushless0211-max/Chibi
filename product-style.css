@@ -1,5 +1,8 @@
- /* General Base Setup */
+/* General Base Setup */
 /*;)*/
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
 /* Structural Layout Wrapper */
 .page-container {
