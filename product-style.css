@@ -10,7 +10,7 @@ body {
 /* Structural Layout Wrapper */
 .page-container {
   max-width: 1100px;
-  margin-top: 25px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 30px; /* Space between product card and reviews card */
@@ -126,7 +126,7 @@ body {
 .product-page-wrapper {
   max-width: 1100px;
   height: 100%;
-  margin: 0 auto;
+  margin: 0;
   display: flex;
   gap: 50px; /* Left aur Right section ke beech ka space */
   background: #ffffff;
