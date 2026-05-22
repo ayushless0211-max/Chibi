@@ -1,11 +1,5 @@
  /* General Base Setup */
-body {
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #f8f9fa;
-  margin: 0;
-  padding: 10px;
-  color: #333333;
-}
+/*;)*/
 
 /* Structural Layout Wrapper */
 .page-container {
@@ -133,6 +127,7 @@ body {
   background: #ffffff;
   padding: 40px;
   border-radius: 0px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* --- LEFT SIDE: GALLERY STYLE --- */
