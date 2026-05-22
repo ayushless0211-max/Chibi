@@ -126,7 +126,8 @@ body {
 .product-page-wrapper {
   max-width: 1100px;
   height: 100%;
-  margin: 0;
+ /* margin: 0;*/
+	margin-top: 25px;
   display: flex;
   gap: 50px; /* Left aur Right section ke beech ka space */
   background: #ffffff;
