@@ -10,88 +10,10 @@ body {
     padding: 10px;
     
 }
-.h1 {
-  margin-top: 25px;
-  text-align: left;
-  font-weight: 600;
-  border-bottom: 2px solid #f1f5f9;
-  padding-bottom: 10px;
-}
 
-.triangle-back-btn {
-  width: 0;
-  height: 0;
-  border-top: 15px solid transparent;
-  border-bottom: 15px solid transparent;
-  border-right: 25px solid #333333;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-  border-left: none;
-  display: inline-block;
-  will-change: transform;
-}
 
-.triangle-back-btn:hover {
-  animation: triangleBounce 0.6s ease-out;
-}
 
-@keyframes triangleBounce {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-12px); }
-  40% { transform: translateX(0); }
-  60% { transform: translateX(-5px); }
-  80% { transform: translateX(0); }
-  100% { transform: translateX(0); }
-}
 
-.product {
-  margin-top: 30px;
-  padding-top: 5px;
-  border: 0px solid black;
-  padding-bottom: 5px;
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
-  padding-right: 0px;
-  overflow-x: auto;
-  scrollbar-width: none; 
-  -ms-overflow-style: none; 
-  -webkit-overflow-scrolling: touch; 
-  height: auto;
-}
-
-.product::-webkit-scrollbar {
-    display: none; 
-}
-
-.card {
-  padding-left: 10px;
-  padding-right: 10px;
-  background-color: #ffffff;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  flex: 1 1 0;
-  border: 0px solid black;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 10px;
-  width: auto;
-}
-
-.card img {
-    display: block;
-    margin-left: 0;
-    margin-right: 0;
-    width: 160px;
-    height: auto;
-    max-width:600px;
-}
-
-.card + .card {
-  border-left: 0px solid black;
-  padding-left: 10px;
-}
 
 .navbar {
   padding: 10px 15px;
@@ -257,7 +179,7 @@ body {
     overflow: hidden;
 	width:45vw;
     background-color: #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .carousel-track {
