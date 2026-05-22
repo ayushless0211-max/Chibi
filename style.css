@@ -252,7 +252,7 @@ body {
     position: relative;
     aspect-ratio: 16 / 10; /* Size flexible scale down hone ke liye */
     max-height: 380px;
-    border-radius: 12px;
+    border-radius: 0px; /*here*/
     overflow: hidden;
     background-color: #e2e8f0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -341,7 +341,7 @@ body {
 .anime-news-ticker-box {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 0px; /*here*/
     display: flex;
     flex-direction: column;
     overflow: hidden;
