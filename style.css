@@ -251,7 +251,8 @@ body {
 .banner-carousel-box {
     position: relative;
     aspect-ratio: 16 / 10; /* Size flexible scale down hone ke liye */
-    max-height: 450px;
+    height: 70%;
+	
     border-radius: 0px; /*here*/
     overflow: hidden;
 	width:auto;
