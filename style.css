@@ -177,7 +177,7 @@ body {
     width: 100%;
     /* Mobile par banner ki height fix rakhenge taaki zyada bada na dikhe */
     height: 240px; 
-    border-radius: 12px;
+    border-radius: 0px;
     overflow: hidden;
     background-color: #e2e8f0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
