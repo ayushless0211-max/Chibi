@@ -242,7 +242,7 @@ body {
     grid-template-columns: 1.8fr 1.2fr; /* Hamesha side by side content rakhega */
     gap: 15px;
     padding: 0;
-    max-width: 1200px;
+    
     margin-top: 25px;
     width: 100%;
     box-sizing: border-box;
@@ -251,11 +251,11 @@ body {
 .banner-carousel-box {
     position: relative;
     aspect-ratio: 16 / 10; /* Size flexible scale down hone ke liye */
-    height: 40vh;
+    height: 25vh;
 	
     border-radius: 0px; /*here*/
     overflow: hidden;
-	width:50vw;
+	width:45vw;
     background-color: #e2e8f0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
@@ -348,7 +348,7 @@ body {
     flex-direction: column;
     overflow: hidden;
 	width: 40vw;
-    height: 40vh; /* Sinks exactly with the height of left container */
+    height: 25vh; /* Sinks exactly with the height of left container */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
