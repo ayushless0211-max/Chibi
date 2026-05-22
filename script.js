@@ -66,3 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
         startTimer();
     }
 });
+
+window.addEventListener("load", () => {
+    const preloader = document.getElementById("anime-preloader");
+    if (preloader) {
+        // thoda sa minimal buffer timeout (300ms) taaki animation sudden break na ho
+        setTimeout(() => {
+            preloader.classList.add("fade-out");
+        }, 300);
+    }
+});
