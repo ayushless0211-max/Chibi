@@ -260,3 +260,260 @@ body {
   color: inherit;         /* Text color normal rakhne ke liye */
 }
 
+/* --- Hero Block (Banner + News Side-by-Side Grid) --- */
+.hero-discovery-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Left section is double the size of right */
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* 1. Left Sliding Banner styling */
+.banner-carousel-box {
+    position: relative;
+    height: 350px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.carousel-track {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    z-index: 1;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    z-index: 2;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.banner-overlay-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: white;
+    padding: 25px 20px;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: left;
+}
+
+/* Carousel Control Elements */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.carousel-arrow:hover { background: #ffffff; }
+.carousel-arrow.prev { left: 15px; }
+.carousel-arrow.next { right: 15px; }
+
+.carousel-dots {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.carousel-dots .dot {
+    width: 8px;
+    height: 8px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.carousel-dots .dot.active {
+    background: #007bff;
+    width: 20px;
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+/* 2. Right Constantly Scrolling News Ticker styling */
+.anime-news-ticker-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.news-header-title {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 12px 15px;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.animate-pulse {
+    animation: pulse 1.5s infinite;
+    color: #ff5722;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.news-ticker-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    padding: 10px 0;
+}
+
+/* Infinite loop system CSS transition */
+.news-ticker-track {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: absolute;
+    width: 100%;
+    animation: scrollUpNews 20s linear infinite;
+}
+
+.news-ticker-track:hover {
+    animation-play-state: paused; /* User mouse hover karega toh news ruk jayegi */
+}
+
+@keyframes scrollUpNews {
+    0% { top: 0; }
+    100% { top: -250px; } /* Adjust strictly based on text elements length */
+}
+
+.news-item {
+    padding: 12px 15px;
+    margin: 0 12px;
+    background: #f8fafc;
+    border-left: 4px solid #007bff;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    text-align: left;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.news-item:hover {
+    background: #f1f5f9;
+}
+
+/* --- 3 & 4. Horizontal Product Cards Layout Rows --- */
+.horizontal-product-section {
+    max-width: 1200px;
+    margin: 30px auto 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.section-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-header-row h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.view-all-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: #007bff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Horizontal track logic (PC me full screen, mobile pe swipe scroll) */
+.horizontal-scroll-row {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px 5px 15px 5px;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Hide standard scrollbar Firefox */
+}
+
+.horizontal-scroll-row::-webkit-scrollbar {
+    display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+/* Card item structural sizing overrides within horizontal track */
+.horizontal-scroll-row .product-card {
+    min-width: 220px; /* Forces cards to stay wide inside flexible block */
+    max-width: 220px;
+    flex-shrink: 0;
+}
+
+/* 📱 Responsive Media Queries for Tablets and Mobile devices */
+@media (max-width: 850px) {
+    .hero-discovery-container {
+        grid-template-columns: 1fr; /* Mobile aur tab par elements vertically stack honge */
+    }
+    .banner-carousel-box {
+        height: 260px;
+    }
+    .anime-news-ticker-box {
+        height: 220px;
+    }
+    @keyframes scrollUpNews {
+        0% { top: 0; }
+        100% { top: -300px; }
+    }
+}
+
