@@ -351,6 +351,7 @@ body {
 	gap: 10px;
 	justify-content: space-between;
 	padding-right: 0px;
+	align-items: center;
 	overflow-x: auto;
 	scrollbar-width: none; 
     -ms-overflow-style: none; 
