@@ -41,7 +41,6 @@ function shuffleArray(array) {
 
 // 🎨 STORE.JS CARD GRID LAYOUT ENGINE (Synced Keys & Structure)
 function createProductCardHTML(product, defaultCategory = "products") {
-    // Firebase field mapping matched with store.js standard (.img and .title)
     const currentImg = product.img || product.image || '';
     const currentTitle = product.title || product.name || 'Untitled Product';
     const priceStr = product.price ? product.price.toString() : "999";
@@ -96,13 +95,12 @@ async function loadDynamicBanners() {
     }
 }
 
-// 🎯 UPDATED: Fetching trending drops directly from master 'products' collection now
+// 🎯 FETCH FROM 'products' COLLECTION
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
 
     try {
-        // Direct target to main 'products' pool
         const querySnapshot = await getDocs(collection(db, "products"));
         let allProducts = [];
         
@@ -111,21 +109,19 @@ async function loadTrendingProducts() {
         });
 
         if (allProducts.length === 0) {
-            container.innerHTML = `<p class="loading-placeholder">No products found in database collection.</p>`;
+            container.innerHTML = `<p class="loading-placeholder">No products found in 'products' collection.</p>`;
             return;
         }
 
-        // Shuffling to make random items show up as trending every time
         const randomProducts = shuffleArray(allProducts);
-        
-        // slice(0, 6) restricts it to show only top 6 items on home page ticker
         const homepageDisplayList = randomProducts.slice(0, 6);
         
         container.innerHTML = homepageDisplayList.map(prod => createProductCardHTML(prod, "products")).join('');
         
     } catch (error) {
-        console.error("Error loading trending products from master list: ", error);
-        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
+        console.error("Error loading products: ", error);
+        alert("Firestore Alert: " + error.message + "\nCheck if Rules are set to public allow read!");
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load trending items.</p>`;
     }
 }
 
@@ -201,14 +197,11 @@ async function loadLiveAnimeNews() {
 
 // 🏗️ DOM Event Handler Sync Hub
 document.addEventListener("DOMContentLoaded", async () => {
-    
-    // Core data injectors running concurrently
     await loadDynamicBanners();
     await loadTrendingProducts();
     await loadRecentlyViewed();
     await loadLiveAnimeNews();
 
-    // Kill Preloader smoothly after data parses completely
     const loader = document.getElementById('globalStoreLoader');
     if (loader) {
         loader.style.opacity = '0';
@@ -216,7 +209,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         setTimeout(() => loader.remove(), 300);
     }
 
-    // 🍔 Menu Drawer Interactivity
     const sideMenu = document.getElementById("sideMenu");
     const menuBackdrop = document.getElementById("menuBackdrop");
     const menuOpenBtn = document.getElementById("menuOpenBtn");
@@ -238,7 +230,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         menuBackdrop.addEventListener("click", closeMenu);
     }
 
-    // ⚔️ Dynamic Carousel Slider Layout Engine
     let currentSlideIndex = 0;
     let carouselInterval;
 
@@ -291,7 +282,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     setTimeout(initCarousel, 500);
 });
 
-// 🛒 3. MASTER INTERACTION LISTENER (Add to Cart System Engine)
+// 🛒 3. MASTER INTERACTION LISTENER
 document.addEventListener('click', (e) => {
     const button = e.target.closest('.addToCart');
     if (!button) return;
@@ -327,7 +318,7 @@ document.addEventListener('click', (e) => {
     alert(`🎉 Added '${title}' smoothly to cart!`);
 });
 
-// 🔐 4. AUTHENTICATION STATUS WATCHER (State Sync Pipeline)
+// 🔐 4. AUTHENTICATION WATCHER
 const authBtn = document.getElementById('login-btn'); 
 const cartNavBtn = document.getElementById('cart-nav-btn');
 
