@@ -1,6 +1,4 @@
-* {
-    box-sizing: border-box; 
-}
+
 
 .description {
   font-size: 15px;
@@ -15,12 +13,7 @@
   overflow: hidden;
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 10px;
-    background-color: #f8fafc;
-    margin: 0;
-}
+
 
 .navbar {
   padding: 10px 15px;
