@@ -102,10 +102,63 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("Error loading recent products: ", error);
         }
     }
+    // --- 📰 Anime News Network Fetch Engine ---
+    async function loadLiveAnimeNews() {
+        const newsTrack = document.getElementById("newsTrack");
+        if (!newsTrack) return;
+
+        // Anime News Network ka official RSS feed URL
+        const annRssUrl = "https://www.animenewsnetwork.com/news/rss.xml";
+        // CORS bypass karne ke liye free rss2json api service
+        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(annRssUrl)}`;
+
+        try {
+            const response = await fetch(proxyUrl);
+            const data = await response.json();
+
+            if (data.status === 'ok' && data.items.length > 0) {
+                let newsHTML = "";
+                
+                // Sirf top 7 latest news headlines uthayenge
+                const latestNews = data.items.slice(0, 7);
+
+                latestNews.forEach(item => {
+                    // Title me se agar koi extra text clean karna ho toh kar sakte hain
+                    newsHTML += `
+                        <div class="news-item" onclick="window.open('${item.link}', '_blank')" style="cursor: pointer;">
+                            🔥 ${item.title}
+                        </div>
+                    `;
+                });
+
+                // Infinite vertical scroll loop banaye rakhne ke liye pehle 2 items ko clone karke niche append karenge
+                if(latestNews.length >= 2) {
+                    newsHTML += `
+                        <div class="news-item" onclick="window.open('${latestNews[0].link}', '_blank')" style="cursor: pointer;">
+                            🔥 ${latestNews[0].title}
+                        </div>
+                    `;
+                    newsHTML += `
+                        <div class="news-item" onclick="window.open('${latestNews[1].link}', '_blank')" style="cursor: pointer;">
+                            🔥 ${latestNews[1].title}
+                        </div>
+                    `;
+                }
+
+                newsTrack.innerHTML = newsHTML;
+            } else {
+                newsTrack.innerHTML = `<div class="news-item">Failed to parse updates. Check back later!</div>`;
+            }
+        } catch (error) {
+            console.error("ANN news fetch karne me error aaya: ", error);
+            newsTrack.innerHTML = `<div class="news-item">Unable to sync live news flash.</div>`;
+        }
+    }
 
     // Run Fetches
     await loadTrendingProducts();
     await loadRecentlyViewed();
+    await loadLiveAnimeNews();
 
     // Kill Preloader safely after async tasks finish
     const loader = document.getElementById('globalStoreLoader');
