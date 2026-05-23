@@ -39,21 +39,24 @@ function shuffleArray(array) {
     return array;
 }
 
-// Optimized Card Template Generator (Updated with tracking attributes)
-function createProductCardHTML(product, defaultCategory = "trending_products") {
-    const priceStr = product.price ? product.price.toString() : "0";
+// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (Synced Keys & Structure)
+function createProductCardHTML(product, defaultCategory = "products") {
+    // Firebase field mapping matched with store.js standard (.img and .title)
+    const currentImg = product.img || product.image || '';
+    const currentTitle = product.title || product.name || 'Untitled Product';
+    const priceStr = product.price ? product.price.toString() : "999";
+    
     return `
-        <div class="card product-card">
-            <a href="product-detail.html?id=${product.id || ''}&cat=${product.category || defaultCategory}" class="card-link-wrapper" style="text-decoration: none; color: inherit;">
-                <img src="${product.image || product.img || 'placeholder.png'}" alt="${product.name || product.title || 'Anime Item'}">
-                <h4 class="description" style="font-size: 14px; margin: 8px 0 4px 0; color: #1e293b; text-align: left;">${product.name || product.title || 'No Title'}</h4>
+        <div class="card">
+            <a href="product-detail.html?id=${product.id || ''}&cat=${product.category || defaultCategory}" class="card-link-wrapper">
+                <img src="${currentImg}" alt="${currentTitle}">
+                <p class="description">${currentTitle}</p>
             </a>
-            <p style="font-size: 13px; color: #007bff; font-weight: 700; margin: 0 0 8px 0; text-align: left;">₹${priceStr}</p>
             <button class="addToCart" 
                     data-id="${product.id || ''}" 
-                    data-price="₹${priceStr}" 
+                    data-price="${priceStr}" 
                     data-category="${product.category || defaultCategory}">
-                <i class="fa-solid fa-cart-shopping"></i> Add to Cart
+                <i class="fa-solid fa-cart-shopping"></i>Add to cart
             </button>
         </div>
     `;
@@ -93,27 +96,35 @@ async function loadDynamicBanners() {
     }
 }
 
+// 🎯 UPDATED: Fetching trending drops directly from master 'products' collection now
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
 
     try {
-        const querySnapshot = await getDocs(collection(db, "trending_products"));
+        // Direct target to main 'products' pool
+        const querySnapshot = await getDocs(collection(db, "products"));
         let allProducts = [];
+        
         querySnapshot.forEach((doc) => {
-            allProducts.push({ id: doc.id, category: "trending_products", ...doc.data() });
+            allProducts.push({ id: doc.id, category: "products", ...doc.data() });
         });
 
         if (allProducts.length === 0) {
-            container.innerHTML = `<p class="loading-placeholder">No products found in trending collection.</p>`;
+            container.innerHTML = `<p class="loading-placeholder">No products found in database collection.</p>`;
             return;
         }
 
+        // Shuffling to make random items show up as trending every time
         const randomProducts = shuffleArray(allProducts);
-        container.innerHTML = randomProducts.map(prod => createProductCardHTML(prod, "trending_products")).join('');
+        
+        // slice(0, 6) restricts it to show only top 6 items on home page ticker
+        const homepageDisplayList = randomProducts.slice(0, 6);
+        
+        container.innerHTML = homepageDisplayList.map(prod => createProductCardHTML(prod, "products")).join('');
         
     } catch (error) {
-        console.error("Error loading trending products: ", error);
+        console.error("Error loading trending products from master list: ", error);
         container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
     }
 }
@@ -191,13 +202,13 @@ async function loadLiveAnimeNews() {
 // 🏗️ DOM Event Handler Sync Hub
 document.addEventListener("DOMContentLoaded", async () => {
     
-    // Core structural loaders
+    // Core data injectors running concurrently
     await loadDynamicBanners();
     await loadTrendingProducts();
     await loadRecentlyViewed();
     await loadLiveAnimeNews();
 
-    // Kill Preloader smoothly
+    // Kill Preloader smoothly after data parses completely
     const loader = document.getElementById('globalStoreLoader');
     if (loader) {
         loader.style.opacity = '0';
@@ -292,9 +303,8 @@ document.addEventListener('click', (e) => {
     const productCategory = button.getAttribute('data-category'); 
     
     const card = button.closest('.card');
-    // Checks for description class in structured cards, falls back to generic name text
-    const titleEl = card ? (card.querySelector('.description') || card.querySelector('h4')) : null;
-    const title = titleEl ? titleEl.innerText : "Anime Item";
+    const titleEl = card ? card.querySelector('.description') : null;
+    const title = titleEl ? titleEl.innerText : "Anime Model";
     const img = card ? card.querySelector('img').src : "";
 
     let cart = JSON.parse(localStorage.getItem('animeCart')) || [];
