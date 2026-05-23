@@ -86,7 +86,7 @@ async function loadDynamicBanners() {
 
 // B. Trending Products Engine (Firestore se)
 async function loadTrendingProducts() {
-    const container = document.getElementById("trendinProductsContainer");
+    const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
 
     try {
