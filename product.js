@@ -172,4 +172,43 @@ function removePreloader() {
   if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.display = 'none', 300); }
 }
 
+// 🔄 RUN THIS ON PRODUCT DETAIL PAGE LOAD
+function trackRecentlyViewed() {
+    // 1. URL se params nikalo
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    const productCat = urlParams.get('cat'); // jjk-products, naruto-products etc.
+
+    if (!productId || !productCat) return;
+
+    // 2. LocalStorage se current list nikalo
+    let recentItems = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+
+    // 3. Object structure create karo
+    const currentItem = { id: productId, cat: productCat };
+
+    // 4. Duplicate Check: Agar item pehle se list me hai toh purane ko hatao
+    recentItems = recentItems.filter(item => {
+        if (typeof item === 'object' && item !== null) {
+            return item.id !== productId;
+        }
+        return item !== productId; // Backward compatibility check
+    });
+
+    // 5. LATEST CLICKED ITEM SABSE UPPARE (Index 0 par push karo)
+    recentItems.unshift(currentItem);
+
+    // 6. Max 10 items hi rakhte hain taaki storage full na ho
+    if (recentItems.length > 10) {
+        recentItems.pop();
+    }
+
+    // 7. Save back to localStorage
+    localStorage.setItem("recentlyViewed", JSON.stringify(recentItems));
+}
+
+// Call this immediately when details page script runs!
+trackRecentlyViewed();
+
+
 getProductDetailFromFirebase();
