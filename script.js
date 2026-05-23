@@ -16,7 +16,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 🌐 2. Dynamic Instant Preloader Container
+// 🌐 AUTOMATED COLLECTION ROUTER (Future proof setup inspired from store.js)
+const registeredCollections = ["jjk-products", "naruto-products", "demonslayer-products"]; 
+
+// 🌐 Dynamic Instant Preloader Container
 (function createGlobalLoader() {
     const globalLoader = document.createElement('div');
     globalLoader.id = 'globalStoreLoader';
@@ -40,21 +43,21 @@ function shuffleArray(array) {
 }
 
 // 🎨 STORE.JS CARD GRID LAYOUT ENGINE (Synced Keys & Structure)
-function createProductCardHTML(product, defaultCategory = "products") {
+function createProductCardHTML(product, collectionName) {
     const currentImg = product.img || product.image || '';
     const currentTitle = product.title || product.name || 'Untitled Product';
     const priceStr = product.price ? product.price.toString() : "999";
     
     return `
         <div class="card">
-            <a href="product-detail.html?id=${product.id || ''}&cat=${product.category || defaultCategory}" class="card-link-wrapper">
+            <a href="product-detail.html?id=${product.id || ''}&cat=${collectionName}" class="card-link-wrapper">
                 <img src="${currentImg}" alt="${currentTitle}">
                 <p class="description">${currentTitle}</p>
             </a>
             <button class="addToCart" 
                     data-id="${product.id || ''}" 
                     data-price="${priceStr}" 
-                    data-category="${product.category || defaultCategory}">
+                    data-category="${collectionName}">
                 <i class="fa-solid fa-cart-shopping"></i>Add to cart
             </button>
         </div>
@@ -95,58 +98,92 @@ async function loadDynamicBanners() {
     }
 }
 
-// 🎯 FETCH FROM 'products' COLLECTION
+// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
 
     try {
-        const querySnapshot = await getDocs(collection(db, "products"));
         let allProducts = [];
-        
-        querySnapshot.forEach((doc) => {
-            allProducts.push({ id: doc.id, category: "products", ...doc.data() });
+
+        // Saare dynamic collections se parallelly items load karo
+        const fetchPromises = registeredCollections.map(async (colName) => {
+            try {
+                const querySnapshot = await getDocs(collection(db, colName));
+                querySnapshot.forEach((doc) => {
+                    allProducts.push({ id: doc.id, originCollection: colName, ...doc.data() });
+                });
+            } catch (err) {
+                console.warn(`Collection ${colName} load nahi ho payi, skipping...`, err);
+            }
         });
 
+        await Promise.all(fetchPromises);
+
         if (allProducts.length === 0) {
-            container.innerHTML = `<p class="loading-placeholder">No products found in 'products' collection.</p>`;
+            container.innerHTML = `<p class="loading-placeholder">No active items found in anime databases.</p>`;
             return;
         }
 
+        // Mix contents taaki harr refresh par alag anime models trending me aayein
         const randomProducts = shuffleArray(allProducts);
         const homepageDisplayList = randomProducts.slice(0, 6);
         
-        container.innerHTML = homepageDisplayList.map(prod => createProductCardHTML(prod, "products")).join('');
+        container.innerHTML = homepageDisplayList.map(prod => 
+            createProductCardHTML(prod, prod.originCollection)
+        ).join('');
         
     } catch (error) {
-        console.error("Error loading products: ", error);
-        alert("Firestore Alert: " + error.message + "\nCheck if Rules are set to public allow read!");
-        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load trending items.</p>`;
+        console.error("Error pooling multi-collection drops: ", error);
+        alert("Firestore Fetch Interrupted: " + error.message);
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
     }
 }
 
+// ⏰ RECENTLY VIEWED WITH MULTI-COLLECTION RECOVERY PIPELINE
 async function loadRecentlyViewed() {
     const container = document.getElementById("recentProductsContainer");
     if (!container) return;
 
-    const recentIDs = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
-    if (recentIDs.length === 0) {
+    // Isme items array format me hone chahiye jisme {id, cat} dono ho
+    const recentItems = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+    if (recentItems.length === 0) {
         container.innerHTML = `<p class="loading-placeholder">Items you checked out recently will appear here.</p>`;
         return;
     }
 
     try {
         let htmlContent = "";
-        for (let id of recentIDs) {
-            const docRef = doc(db, "products", id);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                htmlContent += createProductCardHTML({ id: docSnap.id, category: "products", ...docSnap.data() }, "products");
+        
+        // Loop through each product ID tracking reference
+        for (let item of recentItems) {
+            // Backward compatibility checks (Id directly string ho ya object format)
+            const targetId = typeof item === 'object' ? item.id : item;
+            let targetCat = typeof item === 'object' ? item.cat : null;
+
+            if (!targetId) continue;
+
+            // Agar store pehle ka binary id dump save kiya tha, toh hum auto collection search chalayenge
+            if (!targetCat) {
+                for (const col of registeredCollections) {
+                    const checkDoc = await getDoc(doc(db, col, targetId));
+                    if (checkDoc.exists()) {
+                        targetCat = col;
+                        break;
+                    }
+                }
+            }
+
+            if (targetCat) {
+                const docSnap = await getDoc(doc(db, targetCat, targetId));
+                if (docSnap.exists()) {
+                    htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() }, targetCat);
+                }
             }
         }
         container.innerHTML = htmlContent || `<p class="loading-placeholder">No recent items found.</p>`;
     } catch (error) {
-        console.error("Error loading recent products: ", error);
+        console.error("Error restoring recent views: ", error);
     }
 }
 
@@ -282,7 +319,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     setTimeout(initCarousel, 500);
 });
 
-// 🛒 3. MASTER INTERACTION LISTENER
+// 🛒 3. MASTER INTERACTION LISTENER (Add to Cart Engine)
 document.addEventListener('click', (e) => {
     const button = e.target.closest('.addToCart');
     if (!button) return;
