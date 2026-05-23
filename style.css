@@ -4,15 +4,6 @@
 
 .description {
   font-size: 15px;
-  
-  color: #334155;
-  margin: 8px 0;
-  text-align: center;
-  /* Ek do line se zyada text bada na ho */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;  
-  overflow: hidden;
 }
 
 
