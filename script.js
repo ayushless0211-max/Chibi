@@ -154,7 +154,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             newsTrack.innerHTML = `<div class="news-item">Unable to sync live news flash.</div>`;
         }
     }
+    // 🔄 Background Live News Auto-Refresher (Har 5 minute me bina page refresh kiye update hoga)
+    setInterval(async () => {
+        console.log("Background me ANN se fresh news sync ho rahi hai...");
+        await loadLiveAnimeNews();
+    }, 0.5 * 60 * 1000); // 5 minutes in milliseconds
 
+    
     // Run Fetches
     await loadTrendingProducts();
     await loadRecentlyViewed();
