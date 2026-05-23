@@ -366,32 +366,7 @@
 }
 
 /* 🌟 DYNAMIC RENDERING KA CARD RULES FIXED HERE */
-.card {
-  padding-left: 10px;
-  padding-right: 10px;
-  background-color: #ffffff;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  flex: 1 1 0;
-  border: 0px solid black;
-  justify-content: center;
-  align-items: center;
-	padding-bottom: 10px;
-	width: auto;
-}
 
-.card img {
-   display: block;
-    margin-left: 0;
-    margin-right: 0;
-	width: 160px;
-	height: auto;
-	max-width:600px;
-	
-}
-
-.card + .card {
-	border-left: 0px solid black;
-	padding-left: 10px;}
 
 .loading-placeholder {
     font-family: sans-serif;
