@@ -1,5 +1,6 @@
 // 📦 1. Firebase Modules Import & Config Setup
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -12,9 +13,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 🌐 2. Dynamic Instant Preloader
+// 🌐 2. Dynamic Instant Preloader Container
 (function createGlobalLoader() {
     const globalLoader = document.createElement('div');
     globalLoader.id = 'globalStoreLoader';
@@ -28,7 +30,7 @@ const db = getFirestore(app);
     document.body.insertBefore(globalLoader, document.body.firstChild);
 })();
 
-// Shuffle Algorithm (Random Products Order Ke Liye)
+// Helper: Shuffle Array Algorithm
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -37,21 +39,28 @@ function shuffleArray(array) {
     return array;
 }
 
-// Card HTML Template Generator
-function createProductCardHTML(product) {
+// Optimized Card Template Generator (Updated with tracking attributes)
+function createProductCardHTML(product, defaultCategory = "trending_products") {
+    const priceStr = product.price ? product.price.toString() : "0";
     return `
         <div class="card product-card">
-            <img src="${product.image || 'placeholder.png'}" alt="${product.name || 'Anime Item'}">
-            <h4 style="font-size: 14px; margin: 8px 0 4px 0; color: #1e293b; text-align: left;">${product.name || 'No Title'}</h4>
-            <p style="font-size: 13px; color: #007bff; font-weight: 700; margin: 0 0 8px 0; text-align: left;">₹${product.price || '0'}</p>
-            <button class="addToCart" data-id="${product.id}">Add to Cart</button>
+            <a href="product-detail.html?id=${product.id || ''}&cat=${product.category || defaultCategory}" class="card-link-wrapper" style="text-decoration: none; color: inherit;">
+                <img src="${product.image || product.img || 'placeholder.png'}" alt="${product.name || product.title || 'Anime Item'}">
+                <h4 class="description" style="font-size: 14px; margin: 8px 0 4px 0; color: #1e293b; text-align: left;">${product.name || product.title || 'No Title'}</h4>
+            </a>
+            <p style="font-size: 13px; color: #007bff; font-weight: 700; margin: 0 0 8px 0; text-align: left;">₹${priceStr}</p>
+            <button class="addToCart" 
+                    data-id="${product.id || ''}" 
+                    data-price="₹${priceStr}" 
+                    data-category="${product.category || defaultCategory}">
+                <i class="fa-solid fa-cart-shopping"></i> Add to Cart
+            </button>
         </div>
     `;
 }
 
 // --- 📥 GLOBAL FIREBASE DATA FETCH ENGINES ---
 
-// A. Dynamic Banner Engine (Firestore se)
 async function loadDynamicBanners() {
     const track = document.getElementById("carouselTrack");
     const dotsContainer = document.getElementById("carouselDots");
@@ -84,7 +93,6 @@ async function loadDynamicBanners() {
     }
 }
 
-// B. Trending Products Engine (Firestore se)
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
@@ -93,7 +101,7 @@ async function loadTrendingProducts() {
         const querySnapshot = await getDocs(collection(db, "trending_products"));
         let allProducts = [];
         querySnapshot.forEach((doc) => {
-            allProducts.push({ id: doc.id, ...doc.data() });
+            allProducts.push({ id: doc.id, category: "trending_products", ...doc.data() });
         });
 
         if (allProducts.length === 0) {
@@ -102,7 +110,7 @@ async function loadTrendingProducts() {
         }
 
         const randomProducts = shuffleArray(allProducts);
-        container.innerHTML = randomProducts.map(prod => createProductCardHTML(prod)).join('');
+        container.innerHTML = randomProducts.map(prod => createProductCardHTML(prod, "trending_products")).join('');
         
     } catch (error) {
         console.error("Error loading trending products: ", error);
@@ -110,7 +118,6 @@ async function loadTrendingProducts() {
     }
 }
 
-// C. Recently Viewed Engine
 async function loadRecentlyViewed() {
     const container = document.getElementById("recentProductsContainer");
     if (!container) return;
@@ -124,11 +131,10 @@ async function loadRecentlyViewed() {
     try {
         let htmlContent = "";
         for (let id of recentIDs) {
-            // Note: We check inside standard 'products' list for detailed info
             const docRef = doc(db, "products", id);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() });
+                htmlContent += createProductCardHTML({ id: docSnap.id, category: "products", ...docSnap.data() }, "products");
             }
         }
         container.innerHTML = htmlContent || `<p class="loading-placeholder">No recent items found.</p>`;
@@ -137,7 +143,6 @@ async function loadRecentlyViewed() {
     }
 }
 
-// D. Live ANN RSS Feed News Engine
 async function loadLiveAnimeNews() {
     const newsTrack = document.getElementById("newsTrack");
     if (!newsTrack) return;
@@ -178,7 +183,7 @@ async function loadLiveAnimeNews() {
             newsTrack.innerHTML = `<div class="news-item">Failed to parse updates. Check back later!</div>`;
         }
     } catch (error) {
-        console.error("ANN news fetch karne me error aaya: ", error);
+        console.error("ANN news error: ", error);
         newsTrack.innerHTML = `<div class="news-item">Unable to sync live news flash.</div>`;
     }
 }
@@ -186,13 +191,13 @@ async function loadLiveAnimeNews() {
 // 🏗️ DOM Event Handler Sync Hub
 document.addEventListener("DOMContentLoaded", async () => {
     
-    // Core data streams fire down concurrently 
+    // Core structural loaders
     await loadDynamicBanners();
     await loadTrendingProducts();
     await loadRecentlyViewed();
     await loadLiveAnimeNews();
 
-    // Kill Preloader safely after content rendering finishes
+    // Kill Preloader smoothly
     const loader = document.getElementById('globalStoreLoader');
     if (loader) {
         loader.style.opacity = '0';
@@ -272,8 +277,64 @@ document.addEventListener("DOMContentLoaded", async () => {
         startTimer();
     }
 
-    // Delay initialization till DOM maps out injected assets
     setTimeout(initCarousel, 500);
 });
 
+// 🛒 3. MASTER INTERACTION LISTENER (Add to Cart System Engine)
+document.addEventListener('click', (e) => {
+    const button = e.target.closest('.addToCart');
+    if (!button) return;
+    
+    e.preventDefault();
+    
+    const productId = button.getAttribute('data-id');
+    const productPrice = button.getAttribute('data-price');
+    const productCategory = button.getAttribute('data-category'); 
+    
+    const card = button.closest('.card');
+    // Checks for description class in structured cards, falls back to generic name text
+    const titleEl = card ? (card.querySelector('.description') || card.querySelector('h4')) : null;
+    const title = titleEl ? titleEl.innerText : "Anime Item";
+    const img = card ? card.querySelector('img').src : "";
 
+    let cart = JSON.parse(localStorage.getItem('animeCart')) || [];
+    const match = cart.find(item => item.id === productId);
+
+    if (match) {
+        match.quantity += 1;
+    } else {
+        cart.push({
+            id: productId,
+            title: title,
+            img: img,
+            price: productPrice,
+            category: productCategory,
+            quantity: 1
+        });
+    }
+
+    localStorage.setItem('animeCart', JSON.stringify(cart));
+    alert(`🎉 Added '${title}' smoothly to cart!`);
+});
+
+// 🔐 4. AUTHENTICATION STATUS WATCHER (State Sync Pipeline)
+const authBtn = document.getElementById('login-btn'); 
+const cartNavBtn = document.getElementById('cart-nav-btn');
+
+onAuthStateChanged(auth, (user) => {
+    if (!authBtn) return;
+    if (user) {
+        authBtn.innerText = "Logout"; 
+        authBtn.href = "#";
+        if (cartNavBtn) cartNavBtn.href = "cart.html";
+        authBtn.onclick = (e) => { 
+            e.preventDefault(); 
+            signOut(auth).then(() => window.location.reload()); 
+        };
+    } else {
+        authBtn.innerText = "Login"; 
+        authBtn.href = "login.html"; 
+        authBtn.onclick = null;
+        if (cartNavBtn) cartNavBtn.href = "login.html";
+    }
+});
