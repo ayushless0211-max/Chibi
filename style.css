@@ -341,14 +341,19 @@
 
 /* 📥 HORIZONTAL SCROLL ENGINES PRO */
 #trendingProductsContainer, #recentProductsContainer {
-  margin-top: 20px;
-  padding: 10px 5px;
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  scrollbar-width: none; 
-  -ms-overflow-style: none; 
-  -webkit-overflow-scrolling: touch; 
+  margin-top: 30px;
+  padding-top: 5px;
+  border: 0px solid black;
+  padding-bottom: 5px;
+	display: flex;
+	gap: 10px;
+	justify-content: space-between;
+	padding-right: 0px;
+	overflow-x: auto;
+	scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    -webkit-overflow-scrolling: touch; 
+	height: auto;
 }
 
 #trendingProductsContainer::-webkit-scrollbar, 
