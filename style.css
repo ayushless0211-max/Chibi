@@ -1,4 +1,6 @@
-
+* {
+    box-sizing: border-box; 
+	}
 
 .description {
   font-size: 15px;
