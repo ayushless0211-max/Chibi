@@ -49,124 +49,150 @@ function createProductCardHTML(product) {
     `;
 }
 
-// 🏗️ Dom Content Loaded Logic
-document.addEventListener("DOMContentLoaded", async () => {
-    
-    // --- 📥 Firebase Data Loaders ---
-    async function loadTrendingProducts() {
-        const container = document.getElementById("trendingProductsContainer");
-        if (!container) return;
+// --- 📥 GLOBAL FIREBASE DATA FETCH ENGINES ---
 
-        try {
-            const querySnapshot = await getDocs(collection(db, "products"));
-            let allProducts = [];
-            querySnapshot.forEach((doc) => {
-                allProducts.push({ id: doc.id, ...doc.data() });
-            });
+// A. Dynamic Banner Engine (Firestore se)
+async function loadDynamicBanners() {
+    const track = document.getElementById("carouselTrack");
+    const dotsContainer = document.getElementById("carouselDots");
+    if (!track) return;
 
-            if (allProducts.length === 0) {
-                container.innerHTML = `<p class="loading-placeholder">No products found in database.</p>`;
-                return;
-            }
+    try {
+        const querySnapshot = await getDocs(collection(db, "carousel_banners"));
+        let bannerHTML = "";
+        let dotsHTML = "";
+        let count = 0;
 
-            const randomProducts = shuffleArray(allProducts);
-            container.innerHTML = randomProducts.map(prod => createProductCardHTML(prod)).join('');
-            
-        } catch (error) {
-            console.error("Error loading trending products: ", error);
-            container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            bannerHTML += `
+                <div class="carousel-slide ${count === 0 ? 'active' : ''}">
+                    <img src="${data.image}" alt="Banner ${count + 1}">
+                    <div class="banner-overlay-text">${data.title || 'Epic Update! ✨'}</div>
+                </div>
+            `;
+            dotsHTML += `<span class="dot ${count === 0 ? 'active' : ''}"></span>`;
+            count++;
+        });
+
+        if (count > 0) {
+            track.innerHTML = bannerHTML;
+            if (dotsContainer) dotsContainer.innerHTML = dotsHTML;
         }
+    } catch (error) {
+        console.error("Banners load karne me error: ", error);
     }
+}
 
-    async function loadRecentlyViewed() {
-        const container = document.getElementById("recentProductsContainer");
-        if (!container) return;
+// B. Trending Products Engine (Firestore se)
+async function loadTrendingProducts() {
+    const container = document.getElementById("trendingProductsContainer");
+    if (!container) return;
 
-        const recentIDs = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
-        if (recentIDs.length === 0) {
-            container.innerHTML = `<p class="loading-placeholder">Items you checked out recently will appear here.</p>`;
+    try {
+        const querySnapshot = await getDocs(collection(db, "trending_products"));
+        let allProducts = [];
+        querySnapshot.forEach((doc) => {
+            allProducts.push({ id: doc.id, ...doc.data() });
+        });
+
+        if (allProducts.length === 0) {
+            container.innerHTML = `<p class="loading-placeholder">No products found in trending collection.</p>`;
             return;
         }
 
-        try {
-            let htmlContent = "";
-            for (let id of recentIDs) {
-                const docRef = doc(db, "products", id);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() });
-                }
-            }
-            container.innerHTML = htmlContent || `<p class="loading-placeholder">No recent items found.</p>`;
-        } catch (error) {
-            console.error("Error loading recent products: ", error);
-        }
+        const randomProducts = shuffleArray(allProducts);
+        container.innerHTML = randomProducts.map(prod => createProductCardHTML(prod)).join('');
+        
+    } catch (error) {
+        console.error("Error loading trending products: ", error);
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
     }
-    // --- 📰 Anime News Network Fetch Engine ---
-    async function loadLiveAnimeNews() {
-        const newsTrack = document.getElementById("newsTrack");
-        if (!newsTrack) return;
+}
 
-        // Anime News Network ka official RSS feed URL
-        const annRssUrl = "https://www.animenewsnetwork.com/news/rss.xml";
-        // CORS bypass karne ke liye free rss2json api service
-        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(annRssUrl)}`;
+// C. Recently Viewed Engine
+async function loadRecentlyViewed() {
+    const container = document.getElementById("recentProductsContainer");
+    if (!container) return;
 
-        try {
-            const response = await fetch(proxyUrl);
-            const data = await response.json();
-
-            if (data.status === 'ok' && data.items.length > 0) {
-                let newsHTML = "";
-                
-                // Sirf top 7 latest news headlines uthayenge
-                const latestNews = data.items.slice(0, 7);
-
-                latestNews.forEach(item => {
-                    // Title me se agar koi extra text clean karna ho toh kar sakte hain
-                    newsHTML += `
-                        <div class="news-item" onclick="window.open('${item.link}', '_blank')" style="cursor: pointer;">
-                            🔥 ${item.title}
-                        </div>
-                    `;
-                });
-
-                // Infinite vertical scroll loop banaye rakhne ke liye pehle 2 items ko clone karke niche append karenge
-                if(latestNews.length >= 2) {
-                    newsHTML += `
-                        <div class="news-item" onclick="window.open('${latestNews[0].link}', '_blank')" style="cursor: pointer;">
-                            🔥 ${latestNews[0].title}
-                        </div>
-                    `;
-                    newsHTML += `
-                        <div class="news-item" onclick="window.open('${latestNews[1].link}', '_blank')" style="cursor: pointer;">
-                            🔥 ${latestNews[1].title}
-                        </div>
-                    `;
-                }
-
-                newsTrack.innerHTML = newsHTML;
-            } else {
-                newsTrack.innerHTML = `<div class="news-item">Failed to parse updates. Check back later!</div>`;
-            }
-        } catch (error) {
-            console.error("ANN news fetch karne me error aaya: ", error);
-            newsTrack.innerHTML = `<div class="news-item">Unable to sync live news flash.</div>`;
-        }
+    const recentIDs = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+    if (recentIDs.length === 0) {
+        container.innerHTML = `<p class="loading-placeholder">Items you checked out recently will appear here.</p>`;
+        return;
     }
-    // 🔄 Background Live News Auto-Refresher (Har 5 minute me bina page refresh kiye update hoga)
-    setInterval(async () => {
-        console.log("Background me ANN se fresh news sync ho rahi hai...");
-        await loadLiveAnimeNews();
-    }, 0.5 * 60 * 1000); // 5 minutes in milliseconds
 
+    try {
+        let htmlContent = "";
+        for (let id of recentIDs) {
+            // Note: We check inside standard 'products' list for detailed info
+            const docRef = doc(db, "products", id);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() });
+            }
+        }
+        container.innerHTML = htmlContent || `<p class="loading-placeholder">No recent items found.</p>`;
+    } catch (error) {
+        console.error("Error loading recent products: ", error);
+    }
+}
+
+// D. Live ANN RSS Feed News Engine
+async function loadLiveAnimeNews() {
+    const newsTrack = document.getElementById("newsTrack");
+    if (!newsTrack) return;
+
+    const annRssUrl = "https://www.animenewsnetwork.com/news/rss.xml";
+    const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(annRssUrl)}`;
+
+    try {
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+
+        if (data.status === 'ok' && data.items.length > 0) {
+            let newsHTML = "";
+            const latestNews = data.items.slice(0, 7);
+
+            latestNews.forEach(item => {
+                newsHTML += `
+                    <div class="news-item" onclick="window.open('${item.link}', '_blank')" style="cursor: pointer;">
+                        🔥 ${item.title}
+                    </div>
+                `;
+            });
+
+            if(latestNews.length >= 2) {
+                newsHTML += `
+                    <div class="news-item" onclick="window.open('${latestNews[0].link}', '_blank')" style="cursor: pointer;">
+                        🔥 ${latestNews[0].title}
+                    </div>
+                `;
+                newsHTML += `
+                    <div class="news-item" onclick="window.open('${latestNews[1].link}', '_blank')" style="cursor: pointer;">
+                        🔥 ${latestNews[1].title}
+                    </div>
+                `;
+            }
+            newsTrack.innerHTML = newsHTML;
+        } else {
+            newsTrack.innerHTML = `<div class="news-item">Failed to parse updates. Check back later!</div>`;
+        }
+    } catch (error) {
+        console.error("ANN news fetch karne me error aaya: ", error);
+        newsTrack.innerHTML = `<div class="news-item">Unable to sync live news flash.</div>`;
+    }
+}
+
+// 🏗️ DOM Event Handler Sync Hub
+document.addEventListener("DOMContentLoaded", async () => {
     
-    // Run Fetches
+    // Core data streams fire down concurrently 
+    await loadDynamicBanners();
     await loadTrendingProducts();
     await loadRecentlyViewed();
     await loadLiveAnimeNews();
 
-    // Kill Preloader safely after async tasks finish
+    // Kill Preloader safely after content rendering finishes
     const loader = document.getElementById('globalStoreLoader');
     if (loader) {
         loader.style.opacity = '0';
@@ -196,46 +222,58 @@ document.addEventListener("DOMContentLoaded", async () => {
         menuBackdrop.addEventListener("click", closeMenu);
     }
 
-    // ⚔️ Banner Carousel Logic
-    const slides = document.querySelectorAll(".carousel-slide");
-    const dots = document.querySelectorAll(".carousel-dots .dot");
-    const prevBtn = document.getElementById("prevBanner");
-    const nextBtn = document.getElementById("nextBanner");
-    
+    // ⚔️ Dynamic Carousel Slider Layout Engine
     let currentSlideIndex = 0;
     let carouselInterval;
 
-    function showSlide(index) {
+    function initCarousel() {
+        const slides = document.querySelectorAll(".carousel-slide");
+        const dots = document.querySelectorAll(".carousel-dots .dot");
+        const prevBtn = document.getElementById("prevBanner");
+        const nextBtn = document.getElementById("nextBanner");
+
         if(slides.length === 0) return;
-        slides.forEach(slide => slide.classList.remove("active"));
-        dots.forEach(dot => dot.classList.remove("active"));
-        
-        if (index >= slides.length) currentSlideIndex = 0;
-        else if (index < 0) currentSlideIndex = slides.length - 1;
-        else currentSlideIndex = index;
-        
-        slides[currentSlideIndex].classList.add("active");
-        dots[currentSlideIndex].classList.add("active");
-    }
 
-    function handleNext() { currentSlideIndex++; showSlide(currentSlideIndex); }
-    function handlePrev() { currentSlideIndex--; showSlide(currentSlideIndex); }
+        function showSlide(index) {
+            const activeSlides = document.querySelectorAll(".carousel-slide");
+            const activeDots = document.querySelectorAll(".carousel-dots .dot");
+            
+            if(activeSlides.length === 0) return;
+            activeSlides.forEach(slide => slide.classList.remove("active"));
+            if(activeDots) activeDots.forEach(dot => dot.classList.remove("active"));
+            
+            if (index >= activeSlides.length) currentSlideIndex = 0;
+            else if (index < 0) currentSlideIndex = activeSlides.length - 1;
+            else currentSlideIndex = index;
+            
+            activeSlides[currentSlideIndex].classList.add("active");
+            if(activeDots[currentSlideIndex]) activeDots[currentSlideIndex].classList.add("active");
+        }
 
-    if (nextBtn && prevBtn) {
-        nextBtn.addEventListener("click", () => { handleNext(); resetTimer(); });
-        prevBtn.addEventListener("click", () => { handlePrev(); resetTimer(); });
-    }
+        function handleNext() { currentSlideIndex++; showSlide(currentSlideIndex); }
+        function handlePrev() { currentSlideIndex--; showSlide(currentSlideIndex); }
 
-    dots.forEach((dot, idx) => {
-        dot.addEventListener("click", () => {
-            currentSlideIndex = idx;
-            showSlide(currentSlideIndex);
-            resetTimer();
+        if (nextBtn && prevBtn) {
+            nextBtn.onclick = () => { handleNext(); resetTimer(); };
+            prevBtn.onclick = () => { handlePrev(); resetTimer(); };
+        }
+
+        dots.forEach((dot, idx) => {
+            dot.onclick = () => {
+                currentSlideIndex = idx;
+                showSlide(currentSlideIndex);
+                resetTimer();
+            };
         });
-    });
 
-    function startTimer() { carouselInterval = setInterval(handleNext, 4000); }
-    function resetTimer() { clearInterval(carouselInterval); startTimer(); }
+        function startTimer() { carouselInterval = setInterval(handleNext, 4000); }
+        function resetTimer() { clearInterval(carouselInterval); startTimer(); }
 
-    if(slides.length > 0) { startTimer(); }
+        startTimer();
+    }
+
+    // Delay initialization till DOM maps out injected assets
+    setTimeout(initCarousel, 500);
 });
+
+
