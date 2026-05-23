@@ -16,7 +16,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 🌐 AUTOMATED COLLECTION ROUTER (Future proof setup inspired from store.js)
+// 🌐 AUTOMATED COLLECTION ROUTER 
 const registeredCollections = ["jjk-products", "naruto-products", "demonslayer-products"]; 
 
 // 🌐 Dynamic Instant Preloader Container
@@ -42,7 +42,7 @@ function shuffleArray(array) {
     return array;
 }
 
-// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (Synced Keys & Structure)
+// 🎨 STORE.JS CARD GRID LAYOUT ENGINE
 function createProductCardHTML(product, collectionName) {
     const currentImg = product.img || product.image || '';
     const currentTitle = product.title || product.name || 'Untitled Product';
@@ -106,7 +106,6 @@ async function loadTrendingProducts() {
     try {
         let allProducts = [];
 
-        // Saare dynamic collections se parallelly items load karo
         const fetchPromises = registeredCollections.map(async (colName) => {
             try {
                 const querySnapshot = await getDocs(collection(db, colName));
@@ -125,7 +124,6 @@ async function loadTrendingProducts() {
             return;
         }
 
-        // Mix contents taaki harr refresh par alag anime models trending me aayein
         const randomProducts = shuffleArray(allProducts);
         const homepageDisplayList = randomProducts.slice(0, 6);
         
@@ -135,17 +133,15 @@ async function loadTrendingProducts() {
         
     } catch (error) {
         console.error("Error pooling multi-collection drops: ", error);
-        alert("Firestore Fetch Interrupted: " + error.message);
         container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
     }
 }
 
-// ⏰ RECENTLY VIEWED WITH MULTI-COLLECTION RECOVERY PIPELINE
+// ⏰ RECENTLY VIEWED ENGINE (SABSE LATEST CLICKED PEHLE DIKHEGA)
 async function loadRecentlyViewed() {
     const container = document.getElementById("recentProductsContainer");
     if (!container) return;
 
-    // Isme items array format me hone chahiye jisme {id, cat} dono ho
     const recentItems = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
     if (recentItems.length === 0) {
         container.innerHTML = `<p class="loading-placeholder">Items you checked out recently will appear here.</p>`;
@@ -155,15 +151,21 @@ async function loadRecentlyViewed() {
     try {
         let htmlContent = "";
         
-        // Loop through each product ID tracking reference
+        // Loop standard dynamic order preserve karega (Kyunki Step 1 me unshift kiya hai)
         for (let item of recentItems) {
-            // Backward compatibility checks (Id directly string ho ya object format)
-            const targetId = typeof item === 'object' ? item.id : item;
-            let targetCat = typeof item === 'object' ? item.cat : null;
+            let targetId = null;
+            let targetCat = null;
+
+            if (typeof item === 'object' && item !== null) {
+                targetId = item.id;
+                targetCat = item.cat;
+            } else {
+                targetId = item; // Fallback string handling
+            }
 
             if (!targetId) continue;
 
-            // Agar store pehle ka binary id dump save kiya tha, toh hum auto collection search chalayenge
+            // Agar legacy data me category missing ho toh auto lookup karo
             if (!targetCat) {
                 for (const col of registeredCollections) {
                     const checkDoc = await getDoc(doc(db, col, targetId));
@@ -174,16 +176,23 @@ async function loadRecentlyViewed() {
                 }
             }
 
+            // Document live query call out from specific category database
             if (targetCat) {
-                const docSnap = await getDoc(doc(db, targetCat, targetId));
-                if (docSnap.exists()) {
-                    htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() }, targetCat);
+                try {
+                    const docSnap = await getDoc(doc(db, targetCat, targetId));
+                    if (docSnap.exists()) {
+                        htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() }, targetCat);
+                    }
+                } catch (fetchErr) {
+                    console.error(`Error querying id ${targetId} inside ${targetCat}:`, fetchErr);
                 }
             }
         }
+        
         container.innerHTML = htmlContent || `<p class="loading-placeholder">No recent items found.</p>`;
     } catch (error) {
         console.error("Error restoring recent views: ", error);
+        container.innerHTML = `<p class="loading-placeholder">Failed to pull recent history.</p>`;
     }
 }
 
@@ -319,7 +328,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     setTimeout(initCarousel, 500);
 });
 
-// 🛒 3. MASTER INTERACTION LISTENER (Add to Cart Engine)
+// 🛒 3. MASTER INTERACTION LISTENER
 document.addEventListener('click', (e) => {
     const button = e.target.closest('.addToCart');
     if (!button) return;
