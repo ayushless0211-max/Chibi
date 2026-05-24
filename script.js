@@ -43,19 +43,34 @@ function shuffleArray(array) {
 }
 
 // 🎨 STORE.JS CARD GRID LAYOUT ENGINE
+// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (AUTOMATIC DATA FIXER)
 function createProductCardHTML(product, collectionName) {
-    const currentImg = product.img || product.image || '';
-    const currentTitle = product.title || product.name || 'Untitled Product';
+    // 1. Firebase me jo 'images' array hai, uske 0th index se image URL nikal rahe hain
+    let currentImg = '';
+    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+        currentImg = product.images[0];
+    } else {
+        // Fallback agar kisi me single string ho
+        currentImg = product.image || product.img || '';
+    }
+
+    // 2. Screenshot me 'title' field nahi hai, 'description' field me naam likha hai
+    // Isliye product.description ko primary preference di hai
+    const currentTitle = product.description || product.title || product.name || 'Untitled Product';
+    
     const priceStr = product.price ? product.price.toString() : "999";
+    
+    // 3. ID ke andar se extra space hatane ke liye .trim() lagaya hai
+    const cleanId = product.id ? product.id.toString().trim() : '';
     
     return `
         <div class="card">
-            <a href="product-detail.html?id=${product.id || ''}&cat=${collectionName}" class="card-link-wrapper">
+            <a href="product-detail.html?id=${cleanId}&cat=${collectionName}" class="card-link-wrapper">
                 <img src="${currentImg}" alt="${currentTitle}">
                 <p class="description">${currentTitle}</p>
             </a>
             <button class="addToCart" 
-                    data-id="${product.id || ''}" 
+                    data-id="${cleanId}" 
                     data-price="${priceStr}" 
                     data-category="${collectionName}">
                 <i class="fa-solid fa-cart-shopping"></i>Add to cart
