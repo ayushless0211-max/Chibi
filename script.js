@@ -133,12 +133,17 @@ async function loadDynamicBanners() {
 
 // 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (SUPER SAFE)
 // 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (100% BULLETPROOF)
+// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (CRASH FREE)
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
-    if (!container) return;
+    if (!container) {
+        console.error("⚠️ HTML error: 'trendingProductsContainer' element screen par nahi mila!");
+        return;
+    }
 
     let allProducts = [];
 
+    // Har collection se data nikalna
     for (const colName of registeredCollections) {
         try {
             const querySnapshot = await getDocs(collection(db, colName));
@@ -146,43 +151,43 @@ async function loadTrendingProducts() {
                 if (doc.exists()) {
                     const rawData = doc.data();
                     
-                    // 🔥 LIVE DATA RE-ENGINEERING (Bina Firebase chhede data fix karo)
-                    const cleanedProduct = {
-                        // Document ki main ID uthao aur trim karo
-                        id: doc.id ? doc.id.toString().trim() : '', 
-                        
-                        // Baaki saara data copy karo
-                        ...rawData, 
-                        
-                        // Agar data ke andar extra space wali id field hai, use override karo
-                        id: doc.id ? doc.id.toString().trim() : '' 
-                    };
+                    // Live product structure mapping (bina database chhede formatting alignment)
+                    const cleanId = doc.id ? doc.id.toString().trim() : '';
                     
-                    allProducts.push({ originCollection: colName, ...cleanedProduct });
+                    allProducts.push({
+                        id: cleanId,
+                        ...rawData,
+                        originCollection: colName
+                    });
                 }
             });
         } catch (err) {
-            console.error(`🔴 Firebase Fetch Error [${colName}]:`, err.message || err);
+            console.warn(`⚠️ Collection [${colName}] load nahi hui, par loop chalta rahega.`, err);
         }
     }
 
+    // Validation Check
     if (allProducts.length === 0) {
-        container.innerHTML = `<p class="loading-placeholder">No products found. Check Console for Firestore Rules/Errors.</p>`;
+        container.innerHTML = `<p class="loading-placeholder">Firestore me koi products nahi mile.</p>`;
         return;
     }
 
     try {
-        // Saare products ko mix karo
+        // Shuffling items randomly
         const randomProducts = shuffleArray(allProducts);
         
-        // Cards render karo
-        container.innerHTML = randomProducts.map(prod => 
-            createProductCardHTML(prod, prod.originCollection)
-        ).join('');
+        // Loop lagakar cards HTML generate karna
+        let finalHTML = "";
+        for (let i = 0; i < randomProducts.length; i++) {
+            const cardHTML = createProductCardHTML(randomProducts[i], randomProducts[i].originCollection);
+            if (cardHTML) finalHTML += cardHTML;
+        }
+        
+        container.innerHTML = finalHTML;
         
     } catch (error) {
-        console.error("🔴 Rendering Crash Error:", error);
-        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to display items on screen.</p>`;
+        console.error("🔴 Loop rendering layout inside container crashed:", error);
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Rendering crash handling active.</p>`;
     }
 }
 
