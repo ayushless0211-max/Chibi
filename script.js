@@ -98,50 +98,47 @@ async function loadDynamicBanners() {
     }
 }
 
-// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC
-// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (SHOWS ALL PRODUCTS)
+// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (FIXED & SAFE)
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
 
-    try {
-        let allProducts = [];
+    let allProducts = [];
 
-        // Saare dynamic collections se parallelly saare items load karo
-        const fetchPromises = registeredCollections.map(async (colName) => {
-            try {
-                const querySnapshot = await getDocs(collection(db, colName));
-                querySnapshot.forEach((doc) => {
-                    allProducts.push({ id: doc.id, originCollection: colName, ...doc.data() });
-                });
-            } catch (err) {
-                console.warn(`Collection ${colName} load nahi ho payi, skipping...`, err);
-            }
-        });
-
-        // Saare promises ka wait karo
-        await Promise.all(fetchPromises);
-
-        if (allProducts.length === 0) {
-            container.innerHTML = `<p class="loading-placeholder">No active items found in anime databases.</p>`;
-            return;
+    // Har ek collection ko independent try-catch me fetch kar rahe hain taaki crash na ho
+    for (const colName of registeredCollections) {
+        try {
+            const querySnapshot = await getDocs(collection(db, colName));
+            querySnapshot.forEach((doc) => {
+                allProducts.push({ id: doc.id, originCollection: colName, ...doc.data() });
+            });
+        } catch (err) {
+            // Agar koi collection empty hai ya nahi bani, toh console me warning aayegi par page nahi rukega
+            console.warn(`Firestore Warning: Collection "${colName}" fetch nahi ho saki ya missing hai.`, err);
         }
+    }
 
-        // Mix contents taaki harr baar items unique background layout me shuffle ho kar dikhein
+    // Main Validation: Agar saare collections milakar bhi 0 products hain
+    if (allProducts.length === 0) {
+        container.innerHTML = `<p class="loading-placeholder">No products found. Please check your Firestore collections!</p>`;
+        return;
+    }
+
+    try {
+        // Saare products ko shuffle karo aur ek sath render kar do
         const randomProducts = shuffleArray(allProducts);
         
-        // slice(0, 6) ko hata diya hai taaki .map() ab pure array (saare products) ko render kare
         container.innerHTML = randomProducts.map(prod => 
             createProductCardHTML(prod, prod.originCollection)
         ).join('');
         
     } catch (error) {
-        console.error("Error pooling multi-collection drops: ", error);
-        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
+        console.error("Rendering error in trending products: ", error);
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to display items.</p>`;
     }
 }
 
-// ⏰ RECENTLY VIEWED ENGINE (SABSE LATEST CLICKED PEHLE DIKHEGA)
+// ⏰ RECENTLY VIEWED ENGINE
 async function loadRecentlyViewed() {
     const container = document.getElementById("recentProductsContainer");
     if (!container) return;
@@ -155,7 +152,6 @@ async function loadRecentlyViewed() {
     try {
         let htmlContent = "";
         
-        // Loop standard dynamic order preserve karega (Kyunki Step 1 me unshift kiya hai)
         for (let item of recentItems) {
             let targetId = null;
             let targetCat = null;
@@ -164,12 +160,11 @@ async function loadRecentlyViewed() {
                 targetId = item.id;
                 targetCat = item.cat;
             } else {
-                targetId = item; // Fallback string handling
+                targetId = item;
             }
 
             if (!targetId) continue;
 
-            // Agar legacy data me category missing ho toh auto lookup karo
             if (!targetCat) {
                 for (const col of registeredCollections) {
                     const checkDoc = await getDoc(doc(db, col, targetId));
@@ -180,7 +175,6 @@ async function loadRecentlyViewed() {
                 }
             }
 
-            // Document live query call out from specific category database
             if (targetCat) {
                 try {
                     const docSnap = await getDoc(doc(db, targetCat, targetId));
@@ -217,7 +211,7 @@ async function loadLiveAnimeNews() {
 
             latestNews.forEach(item => {
                 newsHTML += `
-                    <div class="news-item" onclick="window.open('${item.link}', '_blank')" style="cursor: pointer;">
+                    <div class="news-item" onclick="window.open('${item.link}', '_blank')", style="cursor: pointer;">
                         🔥 ${item.title}
                     </div>
                 `;
@@ -225,12 +219,12 @@ async function loadLiveAnimeNews() {
 
             if(latestNews.length >= 2) {
                 newsHTML += `
-                    <div class="news-item" onclick="window.open('${latestNews[0].link}', '_blank')" style="cursor: pointer;">
+                    <div class="news-item" onclick="window.open('${latestNews[0].link}', '_blank')", style="cursor: pointer;">
                         🔥 ${latestNews[0].title}
                     </div>
                 `;
                 newsHTML += `
-                    <div class="news-item" onclick="window.open('${latestNews[1].link}', '_blank')" style="cursor: pointer;">
+                    <div class="news-item" onclick="window.open('${latestNews[1].link}', '_blank')", style="cursor: pointer;">
                         🔥 ${latestNews[1].title}
                     </div>
                 `;
