@@ -43,26 +43,58 @@ function shuffleArray(array) {
 }
 
 // 🎨 STORE.JS CARD GRID LAYOUT ENGINE
+// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (FIXED FOR DESCRIPTION & IMAGE ARRAYS)
 function createProductCardHTML(product, collectionName) {
-    const currentImg = product.img || product.image || '';
-    const currentTitle = product.title || product.name || 'Untitled Product';
-    const priceStr = product.price ? product.price.toString() : "999";
-    
-    return `
-        <div class="card">
-            <a href="product-detail.html?id=${product.id || ''}&cat=${collectionName}" class="card-link-wrapper">
-                <img src="${currentImg}" alt="${currentTitle}">
-                <p class="description">${currentTitle}</p>
-            </a>
-            <button class="addToCart" 
-                    data-id="${product.id || ''}" 
-                    data-price="${priceStr}" 
-                    data-category="${collectionName}">
-                <i class="fa-solid fa-cart-shopping"></i>Add to cart
-            </button>
-        </div>
-    `;
+    if (!product) return '';
+
+    // 1. 📷 Image Array / String Handler
+    let currentImg = '';
+    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+        currentImg = product.images[0]; // Firestore ka array index 0 nikalega
+    } else {
+        currentImg = product.img || product.image || 'https://via.placeholder.com/150'; 
+    }
+
+    // 2. 📝 Title Trimming Engine (Firestore ke lambe description se title nikalna)
+    let rawTitle = 'Anime Premium Figure';
+    
+    if (product.title) {
+        rawTitle = product.title;
+    } else if (product.name) {
+        rawTitle = product.name;
+    } else if (product.description && typeof product.description === 'string') {
+        // Agar main title field nahi hai, toh description uthao
+        // Agar description bohot lambi hai (jaise lookUp summary), toh pehle 40 characters le kar '...' laga do
+        rawTitle = product.description;
+    }
+
+    // Safely card display ke liye text ko chota rakhna taaki design na tute
+    const cleanTitle = rawTitle.length > 45 ? rawTitle.substring(0, 45) + '...' : rawTitle;
+    
+    // 3. 💰 Price & ID safely strip strings
+    const priceStr = product.price ? product.price.toString() : "999";
+    const cleanId = product.id ? product.id.toString().trim() : '';
+    
+    return `
+        <div class="card">
+            <a href="product-detail.html?id=${encodeURIComponent(cleanId)}&cat=${encodeURIComponent(collectionName)}" class="card-link-wrapper">
+                <div class="card-img-container" style="width: 100%; height: 180px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <img src="${currentImg}" alt="${cleanTitle}" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <p class="description" style="margin: 10px 5px; font-weight: 500; font-size: 14px; line-height: 1.3; height: 36px; overflow: hidden;">
+                    ${cleanTitle}
+                </p>
+            </a>
+            <button class="addToCart" 
+                    data-id="${cleanId}" 
+                    data-price="${priceStr}" 
+                    data-category="${collectionName}">
+                <i class="fa-solid fa-cart-shopping"></i>Add to cart
+            </button>
+        </div>
+    `;
 }
+
 
 // --- 📥 GLOBAL FIREBASE DATA FETCH ENGINES ---
 
