@@ -100,46 +100,41 @@ async function loadDynamicBanners() {
 
 // 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC
 async function loadTrendingProducts() {
-// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (SHOWS ALL PRODUCTS)
-async function loadTrendingProducts() {
-    const container = document.getElementById("trendingProductsContainer");
-    if (!container) return;
+    const container = document.getElementById("trendingProductsContainer");
+    if (!container) return;
 
-    try {
-        let allProducts = [];
+    try {
+        let allProducts = [];
 
-        // Saare dynamic collections se parallelly saare items load karo
-        const fetchPromises = registeredCollections.map(async (colName) => {
-            try {
-                const querySnapshot = await getDocs(collection(db, colName));
-                querySnapshot.forEach((doc) => {
-                    allProducts.push({ id: doc.id, originCollection: colName, ...doc.data() });
-                });
-            } catch (err) {
-                console.warn(`Collection ${colName} load nahi ho payi, skipping...`, err);
-            }
-        });
+        const fetchPromises = registeredCollections.map(async (colName) => {
+            try {
+                const querySnapshot = await getDocs(collection(db, colName));
+                querySnapshot.forEach((doc) => {
+                    allProducts.push({ id: doc.id, originCollection: colName, ...doc.data() });
+                });
+            } catch (err) {
+                console.warn(`Collection ${colName} load nahi ho payi, skipping...`, err);
+            }
+        });
 
-        // Saare promises ka wait karo
-        await Promise.all(fetchPromises);
+        await Promise.all(fetchPromises);
 
-        if (allProducts.length === 0) {
-            container.innerHTML = `<p class="loading-placeholder">No active items found in anime databases.</p>`;
-            return;
-        }
+        if (allProducts.length === 0) {
+            container.innerHTML = `<p class="loading-placeholder">No active items found in anime databases.</p>`;
+            return;
+        }
 
-        // Mix contents taaki harr baar items unique background layout me shuffle ho kar dikhein
-        const randomProducts = shuffleArray(allProducts);
-        
-        // slice(0, 6) ko hata diya hai taaki .map() ab pure array (saare products) ko render kare
-        container.innerHTML = randomProducts.map(prod => 
-            createProductCardHTML(prod, prod.originCollection)
-        ).join('');
-        
-    } catch (error) {
-        console.error("Error pooling multi-collection drops: ", error);
-        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
-    }
+        const randomProducts = shuffleArray(allProducts);
+        const homepageDisplayList = randomProducts.slice(0, 6);
+        
+        container.innerHTML = homepageDisplayList.map(prod => 
+            createProductCardHTML(prod, prod.originCollection)
+        ).join('');
+        
+    } catch (error) {
+        console.error("Error pooling multi-collection drops: ", error);
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
+    }
 }
 
 // ⏰ RECENTLY VIEWED ENGINE (SABSE LATEST CLICKED PEHLE DIKHEGA)
