@@ -81,7 +81,7 @@ function createProductCardHTML(product, collectionName) {
                 
                     <img src="${currentImg}" alt="${cleanTitle}">
                 </div>
-                <p class="description" style="margin: 10px 5px; font-weight: 500; font-size: 14px; line-height: 1.3; height: 36px; overflow: hidden;">
+                <p class="description">
                     ${cleanTitle}
                 </p>
             </a>
