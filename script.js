@@ -125,7 +125,7 @@ async function loadTrendingProducts() {
         }
 
         const randomProducts = shuffleArray(allProducts);
-        const homepageDisplayList = randomProducts.slice(0, 7);
+        const homepageDisplayList = randomProducts.slice(0, 6);
         
         container.innerHTML = homepageDisplayList.map(prod => 
             createProductCardHTML(prod, prod.originCollection)
