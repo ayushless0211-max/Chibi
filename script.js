@@ -19,20 +19,6 @@ const db = getFirestore(app);
 // 🌐 AUTOMATED COLLECTION ROUTER 
 const registeredCollections = ["jjk-products", "naruto-products", "demonslayer-products"]; 
 
-// 🌐 Dynamic Instant Preloader Container
-(function createGlobalLoader() {
-    const globalLoader = document.createElement('div');
-    globalLoader.id = 'globalStoreLoader';
-    globalLoader.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; transition: opacity 0.3s ease, visibility 0.3s ease;";
-    globalLoader.innerHTML = `
-        <img style="width: 200px; height: 200px; object-fit: cover;" src="giphy.gif" alt="loading image"/>
-        <p style="font-family: sans-serif; color: #475569; font-size: 18px; font-weight: 500; margin: 0;">
-            Loading your dream store...
-        </p>
-    `;
-    document.body.insertBefore(globalLoader, document.body.firstChild);
-})();
-
 // Helper: Shuffle Array Algorithm
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -42,48 +28,37 @@ function shuffleArray(array) {
     return array;
 }
 
-// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (AUTOMATIC DATA FIXER)
-// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (100% BULLETPROOF FOR MOBILE DEVS)
+// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (100% FAIL-SAFE)
 function createProductCardHTML(product, collectionName) {
-    // 1. Agar product object hi khali ya galat mile toh crash mat ho
     if (!product || typeof product !== 'object') return '';
 
-    // 2. Images array handling: images[0] ko safe tarike se nikalna
+    // Images Array Handling
     let currentImg = '';
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
         currentImg = product.images[0];
     } else if (product.image || product.img) {
         currentImg = product.image || product.img;
     } else {
-        currentImg = 'placeholder.jpg'; // Agar koi image na mile toh link tute na
+        currentImg = 'https://via.placeholder.com/150'; 
     }
 
-    // 3. Title / Description handling (Screenshot ke according product.description prefered)
+    // Title & Description Mapping
     let currentTitle = 'Anime Product';
     if (product.description && typeof product.description === 'string') {
-        // Agar description bohot lambi hai toh use grid ke liye trim kar do
-        currentTitle = product.description.length > 40 ? product.description.substring(0, 40) + '...' : product.description;
+        currentTitle = product.description.length > 35 ? product.description.substring(0, 35) + '...' : product.description;
     } else if (product.title) {
         currentTitle = product.title;
     } else if (product.name) {
         currentTitle = product.name;
     }
     
-    // 4. Price Handler
     const priceStr = product.price ? product.price.toString() : "999";
-    
-    // 5. ID extraction & strict string trimming
-    let cleanId = '';
-    if (product.id) {
-        cleanId = product.id.toString().trim();
-    } else {
-        cleanId = Math.random().toString(36).substring(7); // Emergency Fallback ID
-    }
+    const cleanId = product.id ? product.id.toString().trim() : '';
     
     return `
         <div class="card">
             <a href="product-detail.html?id=${encodeURIComponent(cleanId)}&cat=${encodeURIComponent(collectionName)}" class="card-link-wrapper">
-                <img src="${currentImg}" alt="${currentTitle}" style="width:100%; object-fit:cover;">
+                <img src="${currentImg}" alt="${currentTitle}">
                 <p class="description">${currentTitle}</p>
             </a>
             <button class="addToCart" 
@@ -96,8 +71,61 @@ function createProductCardHTML(product, collectionName) {
     `;
 }
 
+// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC
+async function loadTrendingProducts() {
+    // DOM ko dynamic fetch karte hain function ke andar hi
+    const container = document.getElementById("trendingProductsContainer");
+    if (!container) {
+        console.error("❌ Error: HTML me 'trendingProductsContainer' nahi mila!");
+        return;
+    }
 
-// --- 📥 GLOBAL FIREBASE DATA FETCH ENGINES ---
+    let allProducts = [];
+
+    for (const colName of registeredCollections) {
+        try {
+            const querySnapshot = await getDocs(collection(db, colName));
+            querySnapshot.forEach((doc) => {
+                if (doc.exists()) {
+                    const rawData = doc.data();
+                    const cleanId = doc.id ? doc.id.toString().trim() : '';
+                    
+                    allProducts.push({
+                        id: cleanId,
+                        ...rawData,
+                        originCollection: colName
+                    });
+                }
+            });
+        } catch (err) {
+            console.warn(`⚠️ Collection [${colName}] skip ho gayi:`, err.message);
+        }
+    }
+
+    if (allProducts.length === 0) {
+        container.innerHTML = `<p class="loading-placeholder">No products found in Firestore collections.</p>`;
+        return;
+    }
+
+    try {
+        const randomProducts = shuffleArray(allProducts);
+        let finalHTML = "";
+        
+        for (let i = 0; i < randomProducts.length; i++) {
+            const cardHTML = createProductCardHTML(randomProducts[i], randomProducts[i].originCollection);
+            if (cardHTML) finalHTML += cardHTML;
+        }
+        
+        // Final screen push
+        container.innerHTML = finalHTML;
+        console.log("✅ Trending products successfully loaded!");
+        
+    } catch (error) {
+        console.error("🔴 Loop rendering inside container crashed:", error);
+    }
+}
+
+// --- BAAKI SAARE DATA ENGINES (RECENT, BANNER, NEWS) ---
 
 async function loadDynamicBanners() {
     const track = document.getElementById("carouselTrack");
@@ -127,71 +155,10 @@ async function loadDynamicBanners() {
             if (dotsContainer) dotsContainer.innerHTML = dotsHTML;
         }
     } catch (error) {
-        console.error("Banners load karne me error: ", error);
+        console.error("Banners error: ", error);
     }
 }
 
-// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (SUPER SAFE)
-// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (100% BULLETPROOF)
-// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (CRASH FREE)
-async function loadTrendingProducts() {
-    const container = document.getElementById("trendingProductsContainer");
-    if (!container) {
-        console.error("⚠️ HTML error: 'trendingProductsContainer' element screen par nahi mila!");
-        return;
-    }
-
-    let allProducts = [];
-
-    // Har collection se data nikalna
-    for (const colName of registeredCollections) {
-        try {
-            const querySnapshot = await getDocs(collection(db, colName));
-            querySnapshot.forEach((doc) => {
-                if (doc.exists()) {
-                    const rawData = doc.data();
-                    
-                    // Live product structure mapping (bina database chhede formatting alignment)
-                    const cleanId = doc.id ? doc.id.toString().trim() : '';
-                    
-                    allProducts.push({
-                        id: cleanId,
-                        ...rawData,
-                        originCollection: colName
-                    });
-                }
-            });
-        } catch (err) {
-            console.warn(`⚠️ Collection [${colName}] load nahi hui, par loop chalta rahega.`, err);
-        }
-    }
-
-    // Validation Check
-    if (allProducts.length === 0) {
-        container.innerHTML = `<p class="loading-placeholder">Firestore me koi products nahi mile.</p>`;
-        return;
-    }
-
-    try {
-        // Shuffling items randomly
-        const randomProducts = shuffleArray(allProducts);
-        
-        // Loop lagakar cards HTML generate karna
-        let finalHTML = "";
-        for (let i = 0; i < randomProducts.length; i++) {
-            const cardHTML = createProductCardHTML(randomProducts[i], randomProducts[i].originCollection);
-            if (cardHTML) finalHTML += cardHTML;
-        }
-        
-        container.innerHTML = finalHTML;
-        
-    } catch (error) {
-        console.error("🔴 Loop rendering layout inside container crashed:", error);
-        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Rendering crash handling active.</p>`;
-    }
-}
-
-// ⏰ RECENTLY VIEWED ENGINE
 async function loadRecentlyViewed() {
     const container = document.getElementById("recentProductsContainer");
     if (!container) return;
@@ -204,17 +171,9 @@ async function loadRecentlyViewed() {
 
     try {
         let htmlContent = "";
-        
         for (let item of recentItems) {
-            let targetId = null;
-            let targetCat = null;
-
-            if (typeof item === 'object' && item !== null) {
-                targetId = item.id;
-                targetCat = item.cat;
-            } else {
-                targetId = item;
-            }
+            let targetId = typeof item === 'object' && item !== null ? item.id : item;
+            let targetCat = typeof item === 'object' && item !== null ? item.cat : null;
 
             if (!targetId) continue;
 
@@ -222,11 +181,8 @@ async function loadRecentlyViewed() {
                 for (const col of registeredCollections) {
                     try {
                         const checkDoc = await getDoc(doc(db, col, targetId));
-                        if (checkDoc.exists()) {
-                            targetCat = col;
-                            break;
-                        }
-                    } catch(e) {}
+                        if (checkDoc.exists()) { targetCat = col; break; }
+                    } catch(e){}
                 }
             }
 
@@ -236,16 +192,12 @@ async function loadRecentlyViewed() {
                     if (docSnap.exists()) {
                         htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() }, targetCat);
                     }
-                } catch (fetchErr) {
-                    console.error(`Error querying id ${targetId} inside ${targetCat}:`, fetchErr);
-                }
+                } catch (e) {}
             }
         }
-        
         container.innerHTML = htmlContent || `<p class="loading-placeholder">No recent items found.</p>`;
     } catch (error) {
-        console.error("Error restoring recent views: ", error);
-        container.innerHTML = `<p class="loading-placeholder">Failed to pull recent history.</p>`;
+        console.error("Recent viewed error: ", error);
     }
 }
 
@@ -265,59 +217,34 @@ async function loadLiveAnimeNews() {
             const latestNews = data.items.slice(0, 7);
 
             latestNews.forEach(item => {
-                newsHTML += `
-                    <div class="news-item" onclick="window.open('${item.link}', '_blank')" style="cursor: pointer;">
-                        🔥 ${item.title}
-                    </div>
-                `;
+                newsHTML += `<div class="news-item" onclick="window.open('${item.link}', '_blank')" style="cursor: pointer;">🔥 ${item.title}</div>`;
             });
-
-            if(latestNews.length >= 2) {
-                newsHTML += `
-                    <div class="news-item" onclick="window.open('${latestNews[0].link}', '_blank')" style="cursor: pointer;">
-                        🔥 ${latestNews[0].title}
-                    </div>
-                `;
-                newsHTML += `
-                    <div class="news-item" onclick="window.open('${latestNews[1].link}', '_blank')" style="cursor: pointer;">
-                        🔥 ${latestNews[1].title}
-                    </div>
-                `;
-            }
             newsTrack.innerHTML = newsHTML;
-        } else {
-            newsTrack.innerHTML = `<div class="news-item">Failed to parse updates. Check back later!</div>`;
         }
     } catch (error) {
-        console.error("ANN news error: ", error);
         newsTrack.innerHTML = `<div class="news-item">Unable to sync live news flash.</div>`;
     }
 }
 
-// 🏗️ DOM Event Handler Sync Hub
-document.addEventListener("DOMContentLoaded", async () => {
+// 🏗️ INITIALIZATION CONTROL HUB (Ensures DOM is 100% ready)
+async function initStore() {
+    // Sabse pehle dynamic products aur banners load karo
     await loadDynamicBanners();
     await loadTrendingProducts();
     await loadRecentlyViewed();
     await loadLiveAnimeNews();
 
-    const loader = document.getElementById('globalStoreLoader');
-    if (loader) {
-        loader.style.opacity = '0';
-        loader.style.visibility = 'hidden';
-        setTimeout(() => loader.remove(), 300);
-    }
-
+    // Side Menu Controls
     const sideMenu = document.getElementById("sideMenu");
     const menuBackdrop = document.getElementById("menuBackdrop");
     const menuOpenBtn = document.getElementById("menuOpenBtn");
     const menuCloseBtn = document.getElementById("menuCloseBtn");
 
     if (menuOpenBtn && sideMenu && menuBackdrop) {
-        menuOpenBtn.addEventListener("click", () => {
+        menuOpenBtn.onclick = () => {
             sideMenu.classList.add("is-active");
             menuBackdrop.classList.add("is-active");
-        });
+        };
     }
 
     if (menuCloseBtn && sideMenu && menuBackdrop) {
@@ -325,61 +252,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             sideMenu.classList.remove("is-active");
             menuBackdrop.classList.remove("is-active");
         };
-        menuCloseBtn.addEventListener("click", closeMenu);
-        menuBackdrop.addEventListener("click", closeMenu);
+        menuCloseBtn.onclick = closeMenu;
+        menuBackdrop.onclick = closeMenu;
     }
+}
 
-    let currentSlideIndex = 0;
-    let carouselInterval;
-
-    function initCarousel() {
-        const slides = document.querySelectorAll(".carousel-slide");
-        const dots = document.querySelectorAll(".carousel-dots .dot");
-        const prevBtn = document.getElementById("prevBanner");
-        const nextBtn = document.getElementById("nextBanner");
-
-        if(slides.length === 0) return;
-
-        function showSlide(index) {
-            const activeSlides = document.querySelectorAll(".carousel-slide");
-            const activeDots = document.querySelectorAll(".carousel-dots .dot");
-            
-            if(activeSlides.length === 0) return;
-            activeSlides.forEach(slide => slide.classList.remove("active"));
-            if(activeDots) activeDots.forEach(dot => dot.classList.remove("active"));
-            
-            if (index >= activeSlides.length) currentSlideIndex = 0;
-            else if (index < 0) currentSlideIndex = activeSlides.length - 1;
-            else currentSlideIndex = index;
-            
-            activeSlides[currentSlideIndex].classList.add("active");
-            if(activeDots[currentSlideIndex]) activeDots[currentSlideIndex].classList.add("active");
-        }
-
-        function handleNext() { currentSlideIndex++; showSlide(currentSlideIndex); }
-        function handlePrev() { currentSlideIndex--; showSlide(currentSlideIndex); }
-
-        if (nextBtn && prevBtn) {
-            nextBtn.onclick = () => { handleNext(); resetTimer(); };
-            prevBtn.onclick = () => { handlePrev(); resetTimer(); };
-        }
-
-        dots.forEach((dot, idx) => {
-            dot.onclick = () => {
-                currentSlideIndex = idx;
-                showSlide(currentSlideIndex);
-                resetTimer();
-            };
-        });
-
-        function startTimer() { carouselInterval = setInterval(handleNext, 4000); }
-        function resetTimer() { clearInterval(carouselInterval); startTimer(); }
-
-        startTimer();
-    }
-
-    setTimeout(initCarousel, 500);
-});
+// STRICT EVENT RUNNER
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initStore);
+} else {
+    initStore();
+}
 
 // 🛒 3. MASTER INTERACTION LISTENER
 document.addEventListener('click', (e) => {
@@ -404,12 +287,7 @@ document.addEventListener('click', (e) => {
         match.quantity += 1;
     } else {
         cart.push({
-            id: productId,
-            title: title,
-            img: img,
-            price: productPrice,
-            category: productCategory,
-            quantity: 1
+            id: productId, title: title, img: img, price: productPrice, category: productCategory, quantity: 1
         });
     }
 
@@ -438,35 +316,3 @@ onAuthStateChanged(auth, (user) => {
         if (cartNavBtn) cartNavBtn.href = "login.html";
     }
 });
-
-// 📱 MOBILE SCREEN DEBUGGER LOG (Sirf check karne ke liye)
-(function createMobileLogger() {
-    const logBox = document.createElement('div');
-    logBox.style.cssText = "position: fixed; bottom: 10px; left: 10px; width: 90%; max-height: 150px; background: rgba(0,0,0,0.85); color: #00ff00; font-family: monospace; font-size: 11px; pading: 8px; z-index: 100000; overflow-y: auto; border-radius: 5px; border: 1px solid #333; pointer-events: none;";
-    logBox.id = "mobileLoggerBox";
-    logBox.innerHTML = "<p style='margin:0; color:#fff; font-weight:bold; border-bottom:1px solid #555;'>Mobile Debug Console:</p>";
-    document.body.appendChild(logBox);
-
-    // Purane console.error ko intercept karega
-    const oldError = console.error;
-    console.error = function(...args) {
-        const msg = document.createElement('p');
-        msg.style.margin = "3px 0";
-        msg.style.color = "#ff4d4d";
-        msg.innerText = "❌ " + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
-        logBox.appendChild(msg);
-        logBox.scrollTop = logBox.scrollHeight;
-        oldError.apply(console, args);
-    };
-
-    // Console.warn ko intercept karega
-    const oldWarn = console.warn;
-    console.warn = function(...args) {
-        const msg = document.createElement('p');
-        msg.style.margin = "3px 0";
-        msg.style.color = "#ffaa00";
-        msg.innerText = "⚠️ " + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
-        logBox.appendChild(msg);
-        oldWarn.apply(console, args);
-    };
-})();
