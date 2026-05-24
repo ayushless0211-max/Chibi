@@ -413,3 +413,35 @@ onAuthStateChanged(auth, (user) => {
         if (cartNavBtn) cartNavBtn.href = "login.html";
     }
 });
+
+// 📱 MOBILE SCREEN DEBUGGER LOG (Sirf check karne ke liye)
+(function createMobileLogger() {
+    const logBox = document.createElement('div');
+    logBox.style.cssText = "position: fixed; bottom: 10px; left: 10px; width: 90%; max-height: 150px; background: rgba(0,0,0,0.85); color: #00ff00; font-family: monospace; font-size: 11px; pading: 8px; z-index: 100000; overflow-y: auto; border-radius: 5px; border: 1px solid #333; pointer-events: none;";
+    logBox.id = "mobileLoggerBox";
+    logBox.innerHTML = "<p style='margin:0; color:#fff; font-weight:bold; border-bottom:1px solid #555;'>Mobile Debug Console:</p>";
+    document.body.appendChild(logBox);
+
+    // Purane console.error ko intercept karega
+    const oldError = console.error;
+    console.error = function(...args) {
+        const msg = document.createElement('p');
+        msg.style.margin = "3px 0";
+        msg.style.color = "#ff4d4d";
+        msg.innerText = "❌ " + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+        logBox.appendChild(msg);
+        logBox.scrollTop = logBox.scrollHeight;
+        oldError.apply(console, args);
+    };
+
+    // Console.warn ko intercept karega
+    const oldWarn = console.warn;
+    console.warn = function(...args) {
+        const msg = document.createElement('p');
+        msg.style.margin = "3px 0";
+        msg.style.color = "#ffaa00";
+        msg.innerText = "⚠️ " + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+        logBox.appendChild(msg);
+        oldWarn.apply(console, args);
+    };
+})();
