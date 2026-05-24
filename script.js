@@ -1,15 +1,17 @@
-// 📦 1. Firebase Modules Import & Config Setup
+// 📦 1. Firebase Modules Import & Config Setup (Latest & Matching Versions)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// ✅ Your Absolute Correct Verified Config
 const firebaseConfig = {
     apiKey: "AIzaSyCQLFU68k4uFoY8W25vw_QXr_NqITNFccM",
     authDomain: "fir-store-7a2d5.firebaseapp.com",
     projectId: "fir-store-7a2d5",
     storageBucket: "fir-store-7a2d5.firebasestorage.app",
     messagingSenderId: "426927884345",
-    appId: "1:426927884345:web:a2e7dcfb81c9715860e5e8"
+    appId: "1:426927884345:web:a2e7dcfb81c9715860e5e8",
+    measurementId: "G-3MCLPEPJLD"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -28,30 +30,20 @@ function shuffleArray(array) {
     return array;
 }
 
-// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (100% FAIL-SAFE)
+// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (FALLBACK SECURED)
 function createProductCardHTML(product, collectionName) {
     if (!product || typeof product !== 'object') return '';
 
-    // Images Array Handling
+    // Images Array / String Handler
     let currentImg = '';
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
         currentImg = product.images[0];
-    } else if (product.image || product.img) {
-        currentImg = product.image || product.img;
     } else {
-        currentImg = 'https://via.placeholder.com/150'; 
+        currentImg = product.image || product.img || 'https://via.placeholder.com/150'; 
     }
 
-    // Title & Description Mapping
-    let currentTitle = 'Anime Product';
-    if (product.description && typeof product.description === 'string') {
-        currentTitle = product.description.length > 35 ? product.description.substring(0, 35) + '...' : product.description;
-    } else if (product.title) {
-        currentTitle = product.title;
-    } else if (product.name) {
-        currentTitle = product.name;
-    }
-    
+    // Title / Description Handler (Prefers description from your firestore screenshot)
+    const currentTitle = product.description || product.title || product.name || 'Untitled Anime Chibi';
     const priceStr = product.price ? product.price.toString() : "999";
     const cleanId = product.id ? product.id.toString().trim() : '';
     
@@ -73,12 +65,8 @@ function createProductCardHTML(product, collectionName) {
 
 // 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC
 async function loadTrendingProducts() {
-    // DOM ko dynamic fetch karte hain function ke andar hi
     const container = document.getElementById("trendingProductsContainer");
-    if (!container) {
-        console.error("❌ Error: HTML me 'trendingProductsContainer' nahi mila!");
-        return;
-    }
+    if (!container) return;
 
     let allProducts = [];
 
@@ -98,67 +86,28 @@ async function loadTrendingProducts() {
                 }
             });
         } catch (err) {
-            console.warn(`⚠️ Collection [${colName}] skip ho gayi:`, err.message);
+            console.warn(`⚠️ Collection ${colName} load nahi ho payi, skipping...`, err);
         }
     }
 
     if (allProducts.length === 0) {
-        container.innerHTML = `<p class="loading-placeholder">No products found in Firestore collections.</p>`;
+        container.innerHTML = `<p class="loading-placeholder">No active items found. Please verify your Firebase Rules are set to true.</p>`;
         return;
     }
 
     try {
         const randomProducts = shuffleArray(allProducts);
-        let finalHTML = "";
-        
-        for (let i = 0; i < randomProducts.length; i++) {
-            const cardHTML = createProductCardHTML(randomProducts[i], randomProducts[i].originCollection);
-            if (cardHTML) finalHTML += cardHTML;
-        }
-        
-        // Final screen push
-        container.innerHTML = finalHTML;
-        console.log("✅ Trending products successfully loaded!");
+        container.innerHTML = randomProducts.map(prod => 
+            createProductCardHTML(prod, prod.originCollection)
+        ).join('');
         
     } catch (error) {
-        console.error("🔴 Loop rendering inside container crashed:", error);
+        console.error("Rendering crash error: ", error);
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
     }
 }
 
-// --- BAAKI SAARE DATA ENGINES (RECENT, BANNER, NEWS) ---
-
-async function loadDynamicBanners() {
-    const track = document.getElementById("carouselTrack");
-    const dotsContainer = document.getElementById("carouselDots");
-    if (!track) return;
-
-    try {
-        const querySnapshot = await getDocs(collection(db, "carousel_banners"));
-        let bannerHTML = "";
-        let dotsHTML = "";
-        let count = 0;
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            bannerHTML += `
-                <div class="carousel-slide ${count === 0 ? 'active' : ''}">
-                    <img src="${data.image}" alt="Banner ${count + 1}">
-                    <div class="banner-overlay-text">${data.title || 'Epic Update! ✨'}</div>
-                </div>
-            `;
-            dotsHTML += `<span class="dot ${count === 0 ? 'active' : ''}"></span>`;
-            count++;
-        });
-
-        if (count > 0) {
-            track.innerHTML = bannerHTML;
-            if (dotsContainer) dotsContainer.innerHTML = dotsHTML;
-        }
-    } catch (error) {
-        console.error("Banners error: ", error);
-    }
-}
-
+// ⏰ RECENTLY VIEWED ENGINE
 async function loadRecentlyViewed() {
     const container = document.getElementById("recentProductsContainer");
     if (!container) return;
@@ -179,25 +128,21 @@ async function loadRecentlyViewed() {
 
             if (!targetCat) {
                 for (const col of registeredCollections) {
-                    try {
-                        const checkDoc = await getDoc(doc(db, col, targetId));
-                        if (checkDoc.exists()) { targetCat = col; break; }
-                    } catch(e){}
+                    const checkDoc = await getDoc(doc(db, col, targetId));
+                    if (checkDoc.exists()) { targetCat = col; break; }
                 }
             }
 
             if (targetCat) {
-                try {
-                    const docSnap = await getDoc(doc(db, targetCat, targetId));
-                    if (docSnap.exists()) {
-                        htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() }, targetCat);
-                    }
-                } catch (e) {}
+                const docSnap = await getDoc(doc(db, targetCat, targetId));
+                if (docSnap.exists()) {
+                    htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() }, targetCat);
+                }
             }
         }
         container.innerHTML = htmlContent || `<p class="loading-placeholder">No recent items found.</p>`;
     } catch (error) {
-        console.error("Recent viewed error: ", error);
+        container.innerHTML = `<p class="loading-placeholder">Failed to pull recent history.</p>`;
     }
 }
 
@@ -215,7 +160,6 @@ async function loadLiveAnimeNews() {
         if (data.status === 'ok' && data.items.length > 0) {
             let newsHTML = "";
             const latestNews = data.items.slice(0, 7);
-
             latestNews.forEach(item => {
                 newsHTML += `<div class="news-item" onclick="window.open('${item.link}', '_blank')" style="cursor: pointer;">🔥 ${item.title}</div>`;
             });
@@ -226,15 +170,14 @@ async function loadLiveAnimeNews() {
     }
 }
 
-// 🏗️ INITIALIZATION CONTROL HUB (Ensures DOM is 100% ready)
-async function initStore() {
-    // Sabse pehle dynamic products aur banners load karo
-    await loadDynamicBanners();
+// 🏗️ DOM Event Handler Sync Hub
+async function init() {
+    // Static HTML Banners ko touch nahi karenge, direct trending products load karenge
     await loadTrendingProducts();
     await loadRecentlyViewed();
     await loadLiveAnimeNews();
 
-    // Side Menu Controls
+    // Side Menu
     const sideMenu = document.getElementById("sideMenu");
     const menuBackdrop = document.getElementById("menuBackdrop");
     const menuOpenBtn = document.getElementById("menuOpenBtn");
@@ -246,7 +189,6 @@ async function initStore() {
             menuBackdrop.classList.add("is-active");
         };
     }
-
     if (menuCloseBtn && sideMenu && menuBackdrop) {
         const closeMenu = () => {
             sideMenu.classList.remove("is-active");
@@ -257,11 +199,10 @@ async function initStore() {
     }
 }
 
-// STRICT EVENT RUNNER
 if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initStore);
+    document.addEventListener("DOMContentLoaded", init);
 } else {
-    initStore();
+    init();
 }
 
 // 🛒 3. MASTER INTERACTION LISTENER
@@ -270,7 +211,6 @@ document.addEventListener('click', (e) => {
     if (!button) return;
     
     e.preventDefault();
-    
     const productId = button.getAttribute('data-id');
     const productPrice = button.getAttribute('data-price');
     const productCategory = button.getAttribute('data-category'); 
@@ -283,14 +223,10 @@ document.addEventListener('click', (e) => {
     let cart = JSON.parse(localStorage.getItem('animeCart')) || [];
     const match = cart.find(item => item.id === productId);
 
-    if (match) {
-        match.quantity += 1;
-    } else {
-        cart.push({
-            id: productId, title: title, img: img, price: productPrice, category: productCategory, quantity: 1
-        });
+    if (match) { match.quantity += 1; } 
+    else {
+        cart.push({ id: productId, title: title, img: img, price: productPrice, category: productCategory, quantity: 1 });
     }
-
     localStorage.setItem('animeCart', JSON.stringify(cart));
     alert(`🎉 Added '${title}' smoothly to cart!`);
 });
@@ -305,14 +241,9 @@ onAuthStateChanged(auth, (user) => {
         authBtn.innerText = "Logout"; 
         authBtn.href = "#";
         if (cartNavBtn) cartNavBtn.href = "cart.html";
-        authBtn.onclick = (e) => { 
-            e.preventDefault(); 
-            signOut(auth).then(() => window.location.reload()); 
-        };
+        authBtn.onclick = (e) => { e.preventDefault(); signOut(auth).then(() => window.location.reload()); };
     } else {
-        authBtn.innerText = "Login"; 
-        authBtn.href = "login.html"; 
-        authBtn.onclick = null;
+        authBtn.innerText = "Login"; authBtn.href = "login.html"; authBtn.onclick = null;
         if (cartNavBtn) cartNavBtn.href = "login.html";
     }
 });
