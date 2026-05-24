@@ -43,28 +43,47 @@ function shuffleArray(array) {
 }
 
 // 🎨 STORE.JS CARD GRID LAYOUT ENGINE (AUTOMATIC DATA FIXER)
+// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (100% BULLETPROOF FOR MOBILE DEVS)
 function createProductCardHTML(product, collectionName) {
-    if (!product) return '';
+    // 1. Agar product object hi khali ya galat mile toh crash mat ho
+    if (!product || typeof product !== 'object') return '';
 
-    // 1. Image array handling (images[0])
+    // 2. Images array handling: images[0] ko safe tarike se nikalna
     let currentImg = '';
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
         currentImg = product.images[0];
+    } else if (product.image || product.img) {
+        currentImg = product.image || product.img;
     } else {
-        currentImg = product.image || product.img || '';
+        currentImg = 'placeholder.jpg'; // Agar koi image na mile toh link tute na
     }
 
-    // 2. Title / Description handling
-    const currentTitle = product.description || product.title || product.name || 'Untitled Product';
+    // 3. Title / Description handling (Screenshot ke according product.description prefered)
+    let currentTitle = 'Anime Product';
+    if (product.description && typeof product.description === 'string') {
+        // Agar description bohot lambi hai toh use grid ke liye trim kar do
+        currentTitle = product.description.length > 40 ? product.description.substring(0, 40) + '...' : product.description;
+    } else if (product.title) {
+        currentTitle = product.title;
+    } else if (product.name) {
+        currentTitle = product.name;
+    }
+    
+    // 4. Price Handler
     const priceStr = product.price ? product.price.toString() : "999";
     
-    // 3. ID extra space trim
-    const cleanId = product.id ? product.id.toString().trim() : '';
+    // 5. ID extraction & strict string trimming
+    let cleanId = '';
+    if (product.id) {
+        cleanId = product.id.toString().trim();
+    } else {
+        cleanId = Math.random().toString(36).substring(7); // Emergency Fallback ID
+    }
     
     return `
         <div class="card">
-            <a href="product-detail.html?id=${cleanId}&cat=${collectionName}" class="card-link-wrapper">
-                <img src="${currentImg}" alt="${currentTitle}">
+            <a href="product-detail.html?id=${encodeURIComponent(cleanId)}&cat=${encodeURIComponent(collectionName)}" class="card-link-wrapper">
+                <img src="${currentImg}" alt="${currentTitle}" style="width:100%; object-fit:cover;">
                 <p class="description">${currentTitle}</p>
             </a>
             <button class="addToCart" 
@@ -76,6 +95,7 @@ function createProductCardHTML(product, collectionName) {
         </div>
     `;
 }
+
 
 // --- 📥 GLOBAL FIREBASE DATA FETCH ENGINES ---
 
