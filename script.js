@@ -1,185 +1,387 @@
+// 📦 1. Firebase Modules Import & Config Setup
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCQLFU68k4uFoY8W25vw_QXr_NqITNFccM",
-    authDomain: "fir-store-7a2d5.firebaseapp.com",
-    projectId: "fir-store-7a2d5",
-    storageBucket: "fir-store-7a2d5.firebasestorage.app",
-    messagingSenderId: "426927884345",
-    appId: "1:426927884345:web:a2e7dcfb81c9715860e5e8",
-    measurementId: "G-3MCLPEPJLD"
+    apiKey: "AIzaSyCQLFU68k4uFoY8W25vw_QXr_NqITNFccM",
+    authDomain: "fir-store-7a2d5.firebaseapp.com",
+    projectId: "fir-store-7a2d5",
+    storageBucket: "fir-store-7a2d5.firebasestorage.app",
+    messagingSenderId: "426927884345",
+    appId: "1:426927884345:web:a2e7dcfb81c9715860e5e8"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const registeredCollections = ["jjk-products", "naruto-products", "demonslayer-products"]; 
+// 🌐 AUTOMATED COLLECTION ROUTER 
+const registeredCollections = ["jjk-products", "naruto-products", "demonslayer-products"]; 
 
+// 🌐 Dynamic Instant Preloader Container
+(function createGlobalLoader() {
+    const globalLoader = document.createElement('div');
+    globalLoader.id = 'globalStoreLoader';
+    globalLoader.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; transition: opacity 0.3s ease, visibility 0.3s ease;";
+    globalLoader.innerHTML = `
+        <img style="width: 200px; height: 200px; object-fit: cover;" src="giphy.gif" alt="loading image"/>
+        <p style="font-family: sans-serif; color: #475569; font-size: 18px; font-weight: 500; margin: 0;">
+            Loading your dream store...
+        </p>
+    `;
+    document.body.insertBefore(globalLoader, document.body.firstChild);
+})();
+
+// Helper: Shuffle Array Algorithm
 function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[array[j]]] = [array[array[j]], array[i]];
-    }
-    return array;
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[array[j]]] = [array[array[j]], array[i]];
+    }
+    return array;
 }
 
-// 🎨 HIGH-RES CARD RENDERING LAYOUT ENGINE
+// 🎨 STORE.JS CARD GRID LAYOUT ENGINE
 function createProductCardHTML(product, collectionName) {
-    if (!product) return '';
-
-    // Array handles array structure natively
-    let currentImg = '';
-    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-        currentImg = product.images[0];
-    } else {
-        currentImg = product.image || product.img || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500'; 
-    }
-
-    const currentTitle = product.description || product.title || product.name || 'Anime Figure Premium';
-    const priceStr = product.price ? product.price.toString() : "1299";
-    const cleanId = product.id ? product.id.toString().trim() : 'anime-item';
-    
-    return `
-        <div class="card">
-            <a href="product-detail.html?id=${encodeURIComponent(cleanId)}&cat=${encodeURIComponent(collectionName)}" class="card-link-wrapper">
-                <img src="${currentImg}" alt="${currentTitle}">
-                <p class="description">${currentTitle}</p>
-            </a>
-            <button class="addToCart" 
-                    data-id="${cleanId}" 
-                    data-price="${priceStr}" 
-                    data-category="${collectionName}">
-                <i class="fa-solid fa-cart-shopping"></i>Add to cart
-            </button>
-        </div>
-    `;
+    const currentImg = product.img || product.image || '';
+    const currentTitle = product.title || product.name || 'Untitled Product';
+    const priceStr = product.price ? product.price.toString() : "999";
+    
+    return `
+        <div class="card">
+            <a href="product-detail.html?id=${product.id || ''}&cat=${collectionName}" class="card-link-wrapper">
+                <img src="${currentImg}" alt="${currentTitle}">
+                <p class="description">${currentTitle}</p>
+            </a>
+            <button class="addToCart" 
+                    data-id="${product.id || ''}" 
+                    data-price="${priceStr}" 
+                    data-category="${collectionName}">
+                <i class="fa-solid fa-cart-shopping"></i>Add to cart
+            </button>
+        </div>
+    `;
 }
 
-// 🎯 TRENDING DEPLOYMENT HUB WITH BACKUP DATA
+// --- 📥 GLOBAL FIREBASE DATA FETCH ENGINES ---
+
+async function loadDynamicBanners() {
+    const track = document.getElementById("carouselTrack");
+    const dotsContainer = document.getElementById("carouselDots");
+    if (!track) return;
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "carousel_banners"));
+        let bannerHTML = "";
+        let dotsHTML = "";
+        let count = 0;
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            bannerHTML += `
+                <div class="carousel-slide ${count === 0 ? 'active' : ''}">
+                    <img src="${data.image}" alt="Banner ${count + 1}">
+                    <div class="banner-overlay-text">${data.title || 'Epic Update! ✨'}</div>
+                </div>
+            `;
+            dotsHTML += `<span class="dot ${count === 0 ? 'active' : ''}"></span>`;
+            count++;
+        });
+
+        if (count > 0) {
+            track.innerHTML = bannerHTML;
+            if (dotsContainer) dotsContainer.innerHTML = dotsHTML;
+        }
+    } catch (error) {
+        console.error("Banners load karne me error: ", error);
+    }
+}
+
+// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC
 async function loadTrendingProducts() {
-    const container = document.getElementById("trendingProductsContainer");
-    if (!container) return;
+    const container = document.getElementById("trendingProductsContainer");
+    if (!container) return;
 
-    let allProducts = [];
+    try {
+        let allProducts = [];
 
-    for (const colName of registeredCollections) {
-        try {
-            const querySnapshot = await getDocs(collection(db, colName));
-            querySnapshot.forEach((doc) => {
-                if (doc.exists()) {
-                    const data = doc.data();
-                    allProducts.push({
-                        id: doc.id.toString().trim(),
-                        ...data,
-                        originCollection: colName
-                    });
-                }
-            });
-        } catch (err) {
-            console.log(`Skip collection: ${colName}`);
-        }
-    }
+        const fetchPromises = registeredCollections.map(async (colName) => {
+            try {
+                const querySnapshot = await getDocs(collection(db, colName));
+                querySnapshot.forEach((doc) => {
+                    allProducts.push({ id: doc.id, originCollection: colName, ...doc.data() });
+                });
+            } catch (err) {
+                console.warn(`Collection ${colName} load nahi ho payi, skipping...`, err);
+            }
+        });
 
-    // 🚨 EMERGENCY BACKUP: Agar Firebase lock hai ya response empty hai, toh automatic display chalu rakho
-    if (allProducts.length === 0) {
-        console.warn("⚠️ Firebase returned 0 docs. Launching backup display engine.");
-        allProducts = [
-            {
-                id: "giyu-1",
-                description: "Demon Slayer Tomioka Giyu Chibi Figure",
-                images: ["https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500"],
-                price: "1499",
-                originCollection: "demonslayer-products"
-            },
-            {
-                id: "gojo-1",
-                description: "Jujutsu Kaisen Satoru Gojo Hollow Purple Edition",
-                images: ["https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500"],
-                price: "1899",
-                originCollection: "jjk-products"
-            }
-        ];
-    }
+        await Promise.all(fetchPromises);
 
-    const randomProducts = shuffleArray(allProducts);
-    container.innerHTML = randomProducts.map(prod => 
-        createProductCardHTML(prod, prod.originCollection)
-    ).join('');
+        if (allProducts.length === 0) {
+            container.innerHTML = `<p class="loading-placeholder">No active items found in anime databases.</p>`;
+            return;
+        }
+
+        const randomProducts = shuffleArray(allProducts);
+        const homepageDisplayList = randomProducts.slice(0, 6);
+        
+        container.innerHTML = homepageDisplayList.map(prod => 
+            createProductCardHTML(prod, prod.originCollection)
+        ).join('');
+        
+    } catch (error) {
+        console.error("Error pooling multi-collection drops: ", error);
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
+    }
 }
 
-// ⏰ RECENTLY VIEWED
+// ⏰ RECENTLY VIEWED ENGINE (SABSE LATEST CLICKED PEHLE DIKHEGA)
 async function loadRecentlyViewed() {
-    const container = document.getElementById("recentProductsContainer");
-    if (!container) return;
-    container.innerHTML = `<p class="loading-placeholder">No recent history tracked on this device yet.</p>`;
+    const container = document.getElementById("recentProductsContainer");
+    if (!container) return;
+
+    const recentItems = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+    if (recentItems.length === 0) {
+        container.innerHTML = `<p class="loading-placeholder">Items you checked out recently will appear here.</p>`;
+        return;
+    }
+
+    try {
+        let htmlContent = "";
+        
+        // Loop standard dynamic order preserve karega (Kyunki Step 1 me unshift kiya hai)
+        for (let item of recentItems) {
+            let targetId = null;
+            let targetCat = null;
+
+            if (typeof item === 'object' && item !== null) {
+                targetId = item.id;
+                targetCat = item.cat;
+            } else {
+                targetId = item; // Fallback string handling
+            }
+
+            if (!targetId) continue;
+
+            // Agar legacy data me category missing ho toh auto lookup karo
+            if (!targetCat) {
+                for (const col of registeredCollections) {
+                    const checkDoc = await getDoc(doc(db, col, targetId));
+                    if (checkDoc.exists()) {
+                        targetCat = col;
+                        break;
+                    }
+                }
+            }
+
+            // Document live query call out from specific category database
+            if (targetCat) {
+                try {
+                    const docSnap = await getDoc(doc(db, targetCat, targetId));
+                    if (docSnap.exists()) {
+                        htmlContent += createProductCardHTML({ id: docSnap.id, ...docSnap.data() }, targetCat);
+                    }
+                } catch (fetchErr) {
+                    console.error(`Error querying id ${targetId} inside ${targetCat}:`, fetchErr);
+                }
+            }
+        }
+        
+        container.innerHTML = htmlContent || `<p class="loading-placeholder">No recent items found.</p>`;
+    } catch (error) {
+        console.error("Error restoring recent views: ", error);
+        container.innerHTML = `<p class="loading-placeholder">Failed to pull recent history.</p>`;
+    }
 }
 
-// NEWS FLASH
 async function loadLiveAnimeNews() {
-    const newsTrack = document.getElementById("newsTrack");
-    if (!newsTrack) return;
-    newsTrack.innerHTML = `<div class="news-item">🔥 New Anime Chibi Merch drop coming this Friday! Stay tuned!</div>`;
+    const newsTrack = document.getElementById("newsTrack");
+    if (!newsTrack) return;
+
+    const annRssUrl = "https://www.animenewsnetwork.com/news/rss.xml";
+    const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(annRssUrl)}`;
+
+    try {
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+
+        if (data.status === 'ok' && data.items.length > 0) {
+            let newsHTML = "";
+            const latestNews = data.items.slice(0, 7);
+
+            latestNews.forEach(item => {
+                newsHTML += `
+                    <div class="news-item" onclick="window.open('${item.link}', '_blank')" style="cursor: pointer;">
+                        🔥 ${item.title}
+                    </div>
+                `;
+            });
+
+            if(latestNews.length >= 2) {
+                newsHTML += `
+                    <div class="news-item" onclick="window.open('${latestNews[0].link}', '_blank')" style="cursor: pointer;">
+                        🔥 ${latestNews[0].title}
+                    </div>
+                `;
+                newsHTML += `
+                    <div class="news-item" onclick="window.open('${latestNews[1].link}', '_blank')" style="cursor: pointer;">
+                        🔥 ${latestNews[1].title}
+                    </div>
+                `;
+            }
+            newsTrack.innerHTML = newsHTML;
+        } else {
+            newsTrack.innerHTML = `<div class="news-item">Failed to parse updates. Check back later!</div>`;
+        }
+    } catch (error) {
+        console.error("ANN news error: ", error);
+        newsTrack.innerHTML = `<div class="news-item">Unable to sync live news flash.</div>`;
+    }
 }
 
-// HUB SYNC
-async function init() {
-    await loadTrendingProducts();
-    await loadRecentlyViewed();
-    await loadLiveAnimeNews();
+// 🏗️ DOM Event Handler Sync Hub
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadDynamicBanners();
+    await loadTrendingProducts();
+    await loadRecentlyViewed();
+    await loadLiveAnimeNews();
 
-    // Side Menu Mobile Controls
-    const sideMenu = document.getElementById("sideMenu");
-    const menuBackdrop = document.getElementById("menuBackdrop");
-    const menuOpenBtn = document.getElementById("menuOpenBtn");
-    const menuCloseBtn = document.getElementById("menuCloseBtn");
+    const loader = document.getElementById('globalStoreLoader');
+    if (loader) {
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+        setTimeout(() => loader.remove(), 300);
+    }
 
-    if (menuOpenBtn && sideMenu && menuBackdrop) {
-        menuOpenBtn.onclick = () => {
-            sideMenu.classList.add("is-active");
-            menuBackdrop.classList.add("is-active");
-        };
-    }
-    if (menuCloseBtn && sideMenu && menuBackdrop) {
-        const closeMenu = () => {
-            sideMenu.classList.remove("is-active");
-            menuBackdrop.classList.remove("is-active");
-        };
-        menuCloseBtn.onclick = closeMenu;
-        menuBackdrop.onclick = closeMenu;
-    }
-}
+    const sideMenu = document.getElementById("sideMenu");
+    const menuBackdrop = document.getElementById("menuBackdrop");
+    const menuOpenBtn = document.getElementById("menuOpenBtn");
+    const menuCloseBtn = document.getElementById("menuCloseBtn");
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-} else {
-    init();
-}
+    if (menuOpenBtn && sideMenu && menuBackdrop) {
+        menuOpenBtn.addEventListener("click", () => {
+            sideMenu.classList.add("is-active");
+            menuBackdrop.classList.add("is-active");
+        });
+    }
 
-// CART ADD INTERACTION
-document.addEventListener('click', (e) => {
-    const button = e.target.closest('.addToCart');
-    if (!button) return;
-    
-    e.preventDefault();
-    const productId = button.getAttribute('data-id');
-    const productPrice = button.getAttribute('data-price');
-    const productCategory = button.getAttribute('data-category'); 
-    
-    const card = button.closest('.card');
-    const titleEl = card ? card.querySelector('.description') : null;
-    const title = titleEl ? titleEl.innerText : "Anime Model";
-    const img = card ? card.querySelector('img').src : "";
+    if (menuCloseBtn && sideMenu && menuBackdrop) {
+        const closeMenu = () => {
+            sideMenu.classList.remove("is-active");
+            menuBackdrop.classList.remove("is-active");
+        };
+        menuCloseBtn.addEventListener("click", closeMenu);
+        menuBackdrop.addEventListener("click", closeMenu);
+    }
 
-    let cart = JSON.parse(localStorage.getItem('animeCart')) || [];
-    const match = cart.find(item => item.id === productId);
+    let currentSlideIndex = 0;
+    let carouselInterval;
 
-    if (match) { match.quantity += 1; } 
-    else {
-        cart.push({ id: productId, title: title, img: img, price: productPrice, category: productCategory, quantity: 1 });
-    }
-    localStorage.setItem('animeCart', JSON.stringify(cart));
-    alert(`🎉 Added '${title}' to cart!`);
+    function initCarousel() {
+        const slides = document.querySelectorAll(".carousel-slide");
+        const dots = document.querySelectorAll(".carousel-dots .dot");
+        const prevBtn = document.getElementById("prevBanner");
+        const nextBtn = document.getElementById("nextBanner");
+
+        if(slides.length === 0) return;
+
+        function showSlide(index) {
+            const activeSlides = document.querySelectorAll(".carousel-slide");
+            const activeDots = document.querySelectorAll(".carousel-dots .dot");
+            
+            if(activeSlides.length === 0) return;
+            activeSlides.forEach(slide => slide.classList.remove("active"));
+            if(activeDots) activeDots.forEach(dot => dot.classList.remove("active"));
+            
+            if (index >= activeSlides.length) currentSlideIndex = 0;
+            else if (index < 0) currentSlideIndex = activeSlides.length - 1;
+            else currentSlideIndex = index;
+            
+            activeSlides[currentSlideIndex].classList.add("active");
+            if(activeDots[currentSlideIndex]) activeDots[currentSlideIndex].classList.add("active");
+        }
+
+        function handleNext() { currentSlideIndex++; showSlide(currentSlideIndex); }
+        function handlePrev() { currentSlideIndex--; showSlide(currentSlideIndex); }
+
+        if (nextBtn && prevBtn) {
+            nextBtn.onclick = () => { handleNext(); resetTimer(); };
+            prevBtn.onclick = () => { handlePrev(); resetTimer(); };
+        }
+
+        dots.forEach((dot, idx) => {
+            dot.onclick = () => {
+                currentSlideIndex = idx;
+                showSlide(currentSlideIndex);
+                resetTimer();
+            };
+        });
+
+        function startTimer() { carouselInterval = setInterval(handleNext, 4000); }
+        function resetTimer() { clearInterval(carouselInterval); startTimer(); }
+
+        startTimer();
+    }
+
+    setTimeout(initCarousel, 500);
 });
+
+// 🛒 3. MASTER INTERACTION LISTENER
+document.addEventListener('click', (e) => {
+    const button = e.target.closest('.addToCart');
+    if (!button) return;
+    
+    e.preventDefault();
+    
+    const productId = button.getAttribute('data-id');
+    const productPrice = button.getAttribute('data-price');
+    const productCategory = button.getAttribute('data-category'); 
+    
+    const card = button.closest('.card');
+    const titleEl = card ? card.querySelector('.description') : null;
+    const title = titleEl ? titleEl.innerText : "Anime Model";
+    const img = card ? card.querySelector('img').src : "";
+
+    let cart = JSON.parse(localStorage.getItem('animeCart')) || [];
+    const match = cart.find(item => item.id === productId);
+
+    if (match) {
+        match.quantity += 1;
+    } else {
+        cart.push({
+            id: productId,
+            title: title,
+            img: img,
+            price: productPrice,
+            category: productCategory,
+            quantity: 1
+        });
+    }
+
+    localStorage.setItem('animeCart', JSON.stringify(cart));
+    alert(`🎉 Added '${title}' smoothly to cart!`);
+});
+
+// 🔐 4. AUTHENTICATION WATCHER
+const authBtn = document.getElementById('login-btn'); 
+const cartNavBtn = document.getElementById('cart-nav-btn');
+
+onAuthStateChanged(auth, (user) => {
+    if (!authBtn) return;
+    if (user) {
+        authBtn.innerText = "Logout"; 
+        authBtn.href = "#";
+        if (cartNavBtn) cartNavBtn.href = "cart.html";
+        authBtn.onclick = (e) => { 
+            e.preventDefault(); 
+            signOut(auth).then(() => window.location.reload()); 
+        };
+    } else {
+        authBtn.innerText = "Login"; 
+        authBtn.href = "login.html"; 
+        authBtn.onclick = null;
+        if (cartNavBtn) cartNavBtn.href = "login.html";
+    }
+});   
