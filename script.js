@@ -99,6 +99,7 @@ async function loadDynamicBanners() {
 }
 
 // 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC
+// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (SHOWS ALL PRODUCTS)
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
@@ -106,6 +107,7 @@ async function loadTrendingProducts() {
     try {
         let allProducts = [];
 
+        // Saare dynamic collections se parallelly saare items load karo
         const fetchPromises = registeredCollections.map(async (colName) => {
             try {
                 const querySnapshot = await getDocs(collection(db, colName));
@@ -117,6 +119,7 @@ async function loadTrendingProducts() {
             }
         });
 
+        // Saare promises ka wait karo
         await Promise.all(fetchPromises);
 
         if (allProducts.length === 0) {
@@ -124,10 +127,11 @@ async function loadTrendingProducts() {
             return;
         }
 
+        // Mix contents taaki harr baar items unique background layout me shuffle ho kar dikhein
         const randomProducts = shuffleArray(allProducts);
-        const homepageDisplayList = randomProducts.slice(0, 6);
         
-        container.innerHTML = homepageDisplayList.map(prod => 
+        // slice(0, 6) ko hata diya hai taaki .map() ab pure array (saare products) ko render kare
+        container.innerHTML = randomProducts.map(prod => 
             createProductCardHTML(prod, prod.originCollection)
         ).join('');
         
