@@ -112,43 +112,57 @@ async function loadDynamicBanners() {
 }
 
 // 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (SUPER SAFE)
+// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (100% BULLETPROOF)
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
 
     let allProducts = [];
 
-    // Har ek collection se individual fetch
     for (const colName of registeredCollections) {
         try {
             const querySnapshot = await getDocs(collection(db, colName));
             querySnapshot.forEach((doc) => {
                 if (doc.exists()) {
-                    allProducts.push({ id: doc.id, originCollection: colName, ...doc.data() });
+                    const rawData = doc.data();
+                    
+                    // 🔥 LIVE DATA RE-ENGINEERING (Bina Firebase chhede data fix karo)
+                    const cleanedProduct = {
+                        // Document ki main ID uthao aur trim karo
+                        id: doc.id ? doc.id.toString().trim() : '', 
+                        
+                        // Baaki saara data copy karo
+                        ...rawData, 
+                        
+                        // Agar data ke andar extra space wali id field hai, use override karo
+                        id: doc.id ? doc.id.toString().trim() : '' 
+                    };
+                    
+                    allProducts.push({ originCollection: colName, ...cleanedProduct });
                 }
             });
         } catch (err) {
-            // Agar console me error aaye toh dhyan se check karna kya error hai
-            console.error(`🔴 Firebase Error inside collection "${colName}":`, err.message || err);
+            console.error(`🔴 Firebase Fetch Error [${colName}]:`, err.message || err);
         }
     }
 
-    // Agar sab empty mila
     if (allProducts.length === 0) {
-        container.innerHTML = `<p class="loading-placeholder">No active items found. Check Console for exact Firebase Errors.</p>`;
+        container.innerHTML = `<p class="loading-placeholder">No products found. Check Console for Firestore Rules/Errors.</p>`;
         return;
     }
 
     try {
+        // Saare products ko mix karo
         const randomProducts = shuffleArray(allProducts);
         
+        // Cards render karo
         container.innerHTML = randomProducts.map(prod => 
             createProductCardHTML(prod, prod.originCollection)
         ).join('');
         
     } catch (error) {
-        console.error("Rendering error: ", error);
-        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
+        console.error("🔴 Rendering Crash Error:", error);
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to display items on screen.</p>`;
     }
 }
 
