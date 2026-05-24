@@ -368,7 +368,7 @@ body {
   justify-content: center;
   align-items: center;
 	padding-bottom: 10px;
-	width: 160px;
+	width: auto;
 }
 
 .card img {
