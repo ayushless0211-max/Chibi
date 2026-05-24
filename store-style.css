@@ -65,7 +65,7 @@ body {
   padding-bottom: 5px;
 	display: flex;
 	gap: 10px;
-	justify-content: space-between;
+	/*justify-content: space-between;*/
 	padding-right: 0px;
 	overflow-x: auto;
 	scrollbar-width: none; 
