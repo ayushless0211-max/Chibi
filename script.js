@@ -78,8 +78,8 @@ function createProductCardHTML(product, collectionName) {
     return `
         <div class="card">
             <a href="product-detail.html?id=${encodeURIComponent(cleanId)}&cat=${encodeURIComponent(collectionName)}" class="card-link-wrapper">
-                <div class="card-img-container" style="width: 100%; height: 180px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                    <img src="${currentImg}" alt="${cleanTitle}" style="width: 100%; height: 100%; object-fit: contain;">
+                
+                    <img src="${currentImg}" alt="${cleanTitle}">
                 </div>
                 <p class="description" style="margin: 10px 5px; font-weight: 500; font-size: 14px; line-height: 1.3; height: 36px; overflow: hidden;">
                     ${cleanTitle}
