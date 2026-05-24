@@ -343,7 +343,7 @@ body {
 
 /* 📥 HORIZONTAL SCROLL ENGINES PRO */
 #trendingProductsContainer, #recentProductsContainer {
-  margin-top: 30px;
+  margin-top: 15px;
   padding-top: 5px;
   border: 0px solid black;
   padding-bottom: 5px;
