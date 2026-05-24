@@ -42,25 +42,23 @@ function shuffleArray(array) {
     return array;
 }
 
-// 🎨 STORE.JS CARD GRID LAYOUT ENGINE
 // 🎨 STORE.JS CARD GRID LAYOUT ENGINE (AUTOMATIC DATA FIXER)
 function createProductCardHTML(product, collectionName) {
-    // 1. Firebase me jo 'images' array hai, uske 0th index se image URL nikal rahe hain
+    if (!product) return '';
+
+    // 1. Image array handling (images[0])
     let currentImg = '';
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
         currentImg = product.images[0];
     } else {
-        // Fallback agar kisi me single string ho
         currentImg = product.image || product.img || '';
     }
 
-    // 2. Screenshot me 'title' field nahi hai, 'description' field me naam likha hai
-    // Isliye product.description ko primary preference di hai
+    // 2. Title / Description handling
     const currentTitle = product.description || product.title || product.name || 'Untitled Product';
-    
     const priceStr = product.price ? product.price.toString() : "999";
     
-    // 3. ID ke andar se extra space hatane ke liye .trim() lagaya hai
+    // 3. ID extra space trim
     const cleanId = product.id ? product.id.toString().trim() : '';
     
     return `
@@ -113,34 +111,35 @@ async function loadDynamicBanners() {
     }
 }
 
-// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (FIXED & SAFE)
+// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (SUPER SAFE)
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
 
     let allProducts = [];
 
-    // Har ek collection ko independent try-catch me fetch kar rahe hain taaki crash na ho
+    // Har ek collection se individual fetch
     for (const colName of registeredCollections) {
         try {
             const querySnapshot = await getDocs(collection(db, colName));
             querySnapshot.forEach((doc) => {
-                allProducts.push({ id: doc.id, originCollection: colName, ...doc.data() });
+                if (doc.exists()) {
+                    allProducts.push({ id: doc.id, originCollection: colName, ...doc.data() });
+                }
             });
         } catch (err) {
-            // Agar koi collection empty hai ya nahi bani, toh console me warning aayegi par page nahi rukega
-            console.warn(`Firestore Warning: Collection "${colName}" fetch nahi ho saki ya missing hai.`, err);
+            // Agar console me error aaye toh dhyan se check karna kya error hai
+            console.error(`🔴 Firebase Error inside collection "${colName}":`, err.message || err);
         }
     }
 
-    // Main Validation: Agar saare collections milakar bhi 0 products hain
+    // Agar sab empty mila
     if (allProducts.length === 0) {
-        container.innerHTML = `<p class="loading-placeholder">No products found. Please check your Firestore collections!</p>`;
+        container.innerHTML = `<p class="loading-placeholder">No active items found. Check Console for exact Firebase Errors.</p>`;
         return;
     }
 
     try {
-        // Saare products ko shuffle karo aur ek sath render kar do
         const randomProducts = shuffleArray(allProducts);
         
         container.innerHTML = randomProducts.map(prod => 
@@ -148,8 +147,8 @@ async function loadTrendingProducts() {
         ).join('');
         
     } catch (error) {
-        console.error("Rendering error in trending products: ", error);
-        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to display items.</p>`;
+        console.error("Rendering error: ", error);
+        container.innerHTML = `<p class="loading-placeholder" style="color: red;">Failed to load hot drops.</p>`;
     }
 }
 
@@ -182,11 +181,13 @@ async function loadRecentlyViewed() {
 
             if (!targetCat) {
                 for (const col of registeredCollections) {
-                    const checkDoc = await getDoc(doc(db, col, targetId));
-                    if (checkDoc.exists()) {
-                        targetCat = col;
-                        break;
-                    }
+                    try {
+                        const checkDoc = await getDoc(doc(db, col, targetId));
+                        if (checkDoc.exists()) {
+                            targetCat = col;
+                            break;
+                        }
+                    } catch(e) {}
                 }
             }
 
@@ -226,7 +227,7 @@ async function loadLiveAnimeNews() {
 
             latestNews.forEach(item => {
                 newsHTML += `
-                    <div class="news-item" onclick="window.open('${item.link}', '_blank')", style="cursor: pointer;">
+                    <div class="news-item" onclick="window.open('${item.link}', '_blank')" style="cursor: pointer;">
                         🔥 ${item.title}
                     </div>
                 `;
@@ -234,12 +235,12 @@ async function loadLiveAnimeNews() {
 
             if(latestNews.length >= 2) {
                 newsHTML += `
-                    <div class="news-item" onclick="window.open('${latestNews[0].link}', '_blank')", style="cursor: pointer;">
+                    <div class="news-item" onclick="window.open('${latestNews[0].link}', '_blank')" style="cursor: pointer;">
                         🔥 ${latestNews[0].title}
                     </div>
                 `;
                 newsHTML += `
-                    <div class="news-item" onclick="window.open('${latestNews[1].link}', '_blank')", style="cursor: pointer;">
+                    <div class="news-item" onclick="window.open('${latestNews[1].link}', '_blank')" style="cursor: pointer;">
                         🔥 ${latestNews[1].title}
                     </div>
                 `;
