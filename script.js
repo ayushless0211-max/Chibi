@@ -42,41 +42,17 @@ function shuffleArray(array) {
     return array;
 }
 
-// 🎨 STORE.JS CARD GRID LAYOUT ENGINE (FIXED FOR BROKEN LAYOUTS & ARRAYS)
+// 🎨 STORE.JS CARD GRID LAYOUT ENGINE
 function createProductCardHTML(product, collectionName) {
-    if (!product) return '';
-
-    // 1. 📷 Image Array or String Parser
-    let currentImg = '';
-    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-        currentImg = product.images[0]; 
-    } else {
-        currentImg = product.img || product.image || 'https://via.placeholder.com/150'; 
-    }
-
-    // 2. 📝 Description & Title Fallback Handler
-    let rawTitle = 'Untitled Product';
-    if (product.title) {
-        rawTitle = product.title;
-    } else if (product.name) {
-        rawTitle = product.name;
-    } else if (product.description && typeof product.description === 'string') {
-        rawTitle = product.description;
-    }
-
-    // Lambi descriptions ko layout todne se rokne ke liye auto trim engine
-    const cleanTitle = rawTitle.length > 45 ? rawTitle.substring(0, 45) + '...' : rawTitle;
+    const currentImg = product.img || product.image || '';
+    const currentTitle = product.title || product.name || 'Untitled Product';
     const priceStr = product.price ? product.price.toString() : "999";
     
     return `
         <div class="card">
             <a href="product-detail.html?id=${product.id || ''}&cat=${collectionName}" class="card-link-wrapper">
-                <div class="card-img-container" style="width: 100%; height: 180px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                    <img src="${currentImg}" alt="${cleanTitle}" style="width: 100%; height: 100%; object-fit: contain;">
-                </div>
-                <p class="description" style="margin: 10px 5px; font-weight: 500; font-size: 14px; line-height: 1.3; height: 36px; overflow: hidden;">
-                    ${cleanTitle}
-                </p>
+                <img src="${currentImg}" alt="${currentTitle}">
+                <p class="description">${currentTitle}</p>
             </a>
             <button class="addToCart" 
                     data-id="${product.id || ''}" 
@@ -122,7 +98,7 @@ async function loadDynamicBanners() {
     }
 }
 
-// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC (ALL PRODUCTS UNLOCKED)
+// 🎯 MULTI-COLLECTION AUTOMATED TRENDING DROP LOGIC
 async function loadTrendingProducts() {
     const container = document.getElementById("trendingProductsContainer");
     if (!container) return;
@@ -148,10 +124,10 @@ async function loadTrendingProducts() {
             return;
         }
 
-        // ✅ .slice(0, 6) completely removed karke poori database display unlock kar di hai
         const randomProducts = shuffleArray(allProducts);
+        const homepageDisplayList = randomProducts.slice(0, 6);
         
-        container.innerHTML = randomProducts.map(prod => 
+        container.innerHTML = homepageDisplayList.map(prod => 
             createProductCardHTML(prod, prod.originCollection)
         ).join('');
         
@@ -175,6 +151,7 @@ async function loadRecentlyViewed() {
     try {
         let htmlContent = "";
         
+        // Loop standard dynamic order preserve karega (Kyunki Step 1 me unshift kiya hai)
         for (let item of recentItems) {
             let targetId = null;
             let targetCat = null;
@@ -183,11 +160,12 @@ async function loadRecentlyViewed() {
                 targetId = item.id;
                 targetCat = item.cat;
             } else {
-                targetId = item; 
+                targetId = item; // Fallback string handling
             }
 
             if (!targetId) continue;
 
+            // Agar legacy data me category missing ho toh auto lookup karo
             if (!targetCat) {
                 for (const col of registeredCollections) {
                     const checkDoc = await getDoc(doc(db, col, targetId));
@@ -198,6 +176,7 @@ async function loadRecentlyViewed() {
                 }
             }
 
+            // Document live query call out from specific category database
             if (targetCat) {
                 try {
                     const docSnap = await getDoc(doc(db, targetCat, targetId));
