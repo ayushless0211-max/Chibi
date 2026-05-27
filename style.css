@@ -159,7 +159,7 @@ body {
   align-items: center;
 } 
 
-/* --- ⚡ Responsive Hero Block --- */
+/* new section*/
 .hero-discovery-container {
     display: grid;
     grid-template-columns: 1fr; 
@@ -342,7 +342,7 @@ body {
     .anime-news-ticker-box { height: 380px; }
 }
 
-/* 📥 HORIZONTAL SCROLL ENGINES PRO */
+/* trending section */
 #trendingProductsContainer, #recentProductsContainer {
   margin-top: 30px;
   padding-top: 5px;
@@ -391,7 +391,7 @@ body {
     display: none; 
 }
 
-/* 🌟 DYNAMIC RENDERING KA CARD RULES FIXED HERE */
+/* card error fixed by p*/
 
 
 .loading-placeholder {
